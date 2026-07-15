@@ -50,9 +50,8 @@ void	Server::removeClients()
 
 	for (size_t i = 0; i < error_clients.size(); i++)
 	{
-		_clients.erase(error_clients[i]);
-		_event_manager.close(error_clients[i]);
-		std::cout << "\033[32m✔\033[0m Client " << error_clients[i] << " disconnected." << std::endl;
+		if (std::find(_clients2rm.begin(), _clients2rm.end(), error_clients[i]) == _clients2rm.end())
+			_clients2rm.push_back(error_clients[i]);
 	}
 	for (size_t i = 0; i < _clients2rm.size(); i++)
 	{

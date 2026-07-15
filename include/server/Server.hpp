@@ -5,6 +5,7 @@
 # include <string>
 # include <map>
 # include <arpa/inet.h>
+# include <algorithm>
 
 # include "server/Socket.hpp"
 # include "server/EventManager.hpp"
