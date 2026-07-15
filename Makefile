@@ -9,6 +9,7 @@ SRCS		= 	src/main.cpp\
 				src/server/EventManager.cpp\
 				src/server/Server.cpp\
 				src/server/Socket.cpp\
+				src/message/Message.cpp\
 
 REMOVE		= 	rm -f ${OBJS}
 

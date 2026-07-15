@@ -1,4 +1,5 @@
 #include "server/Server.hpp"
+#include "message/Message.hpp"
 
 //// Cannonical Methods
 // Constructors
@@ -111,9 +112,12 @@ void	Server::readClients()
 			pos = findcrfl(stream);
 			while (pos != std::string::npos)
 			{
-				_clients[read_clients[i]].setStream(stream.substr(0, pos));
-				std::cout << "Complete message received: " << _clients[read_clients[i]].getStream() << std::endl;
-				// parse and put message object within client at _clients[read_clients[i]]
+				std::string raw_command = stream.substr(0, pos);
+				Message parsed_msg(raw_command);
+				
+				std::cout << "[DEBUG] Comando extraído: [" << parsed_msg.getCommand() << "]" << std::endl;
+				executeCommand(read_clients[i], parsed_msg);
+				
 				stream.erase(0, pos + 2);
 				pos = findcrfl(stream);
 			}
@@ -197,3 +201,63 @@ void	Server::run(const int &port, const std::string &password)
 	}
 	std::cout << "\nSIGINT received. Initiating server shutdown..." << '\n';
 }
+
+void Server::executeCommand(int client_fd, const Message &msg)
+{
+	std::string cmd = msg.getCommand();
+
+	if (cmd == "NICK")
+		std::cout << "-> Executing NICK for FD " << client_fd << std::endl;
+	else if (cmd == "USER")
+		std::cout << "-> Executing USER for FD " << client_fd << std::endl;
+	else if (cmd == "JOIN")
+		std::cout << "-> Executing JOIN for FD " << client_fd << std::endl;
+	else if (cmd == "PRIVMSG")
+		std::cout << "-> Executing PRIVMSG for FD " << client_fd << std::endl;
+	else
+		std::cout << "\033[33m[WARNING]\033[0m Unknown Command Received: " << cmd << std::endl;
+}
+
+/*
+void Server::executeCommand(int client_fd, const Message &msg)
+{
+	std::string cmd = msg.getCommand();
+
+	if (cmd == "NICK")
+		handleNick(client_fd, msg);
+	else if (cmd == "USER")
+		handleUser(client_fd, msg);
+	else if (cmd == "JOIN")
+		handleJoin(client_fd, msg);
+	else if (cmd == "PRIVMSG")
+		handlePrivmsg(client_fd, msg);
+	else
+	{
+		std::cout << "\033[33m[WARNING]\033[0m Comando desconocido recibido: " << cmd << std::endl;
+	}
+}
+
+void Server::handleNick(int client_fd, const Message &msg)
+{
+	std::cout << "-> Ejecutando NICK para FD " << client_fd << std::endl;
+	// TODO: Lógica para validar y guardar el Nickname
+}
+
+void Server::handleUser(int client_fd, const Message &msg)
+{
+	std::cout << "-> Ejecutando USER para FD " << client_fd << std::endl;
+	// TODO: Lógica para registrar el Username
+}
+
+void Server::handleJoin(int client_fd, const Message &msg)
+{
+	std::cout << "-> Ejecutando JOIN para FD " << client_fd << std::endl;
+	// TODO: Lógica para unirse a un canal
+}
+
+void Server::handlePrivmsg(int client_fd, const Message &msg)
+{
+	std::cout << "-> Ejecutando PRIVMSG para FD " << client_fd << std::endl;
+	// TODO: Lógica para enviar mensajes a canales o usuarios
+}
+*/

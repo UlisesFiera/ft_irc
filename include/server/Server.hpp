@@ -10,6 +10,7 @@
 # include "server/Socket.hpp"
 # include "server/EventManager.hpp"
 # include "client/Client.hpp"
+# include "message/Message.hpp"
 
 # define BUFFER_SIZE 1024
 
@@ -42,6 +43,14 @@ class Server
 		std::string				readStream(int client_fd);
 		void					removeClients();
 		size_t					findcrfl(const std::string &stream);
+
+		void					executeCommand(int client_fd, const Message &msg);
+/*		
+		void					handleNick(int client_fd, const Message &msg);
+		void					handleUser(int client_fd, const Message &msg);
+		void					handleJoin(int client_fd, const Message &msg);
+		void					handlePrivmsg(int client_fd, const Message &msg);
+*/
 };
 
 #endif
