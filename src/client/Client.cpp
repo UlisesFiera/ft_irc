@@ -26,6 +26,11 @@ Client::~Client()
 
 }
 
+std::string const	&Client::getStream() const
+{
+	return (_stream);
+}
+
 time_t const	&Client::getLastActivity() const
 {
 	return (_lastActivity);
@@ -39,4 +44,9 @@ void Client::setLastActivity()
 void	Client::setPort(const int &port)
 {
 	_port = port;
+}
+
+void	Client::setStream(const std::string &stream)
+{
+	_stream = stream;
 }

@@ -46,13 +46,80 @@ void	Server::signal_handler(int signum)
 
 void	Server::removeClients()
 {
-	std::vector<int>	error_clients = _event_manager.errorClients();
+	const std::vector<int>		&error_clients = _event_manager.errorClients();
 
 	for (size_t i = 0; i < error_clients.size(); i++)
 	{
 		_clients.erase(error_clients[i]);
 		_event_manager.close(error_clients[i]);
 		std::cout << "\033[32m✔\033[0m Client " << error_clients[i] << " disconnected." << std::endl;
+	}
+	for (size_t i = 0; i < _clients2rm.size(); i++)
+	{
+		_clients.erase(_clients2rm[i]);
+		_event_manager.close(_clients2rm[i]);
+		std::cout << "\033[32m✔\033[0m Client " << _clients2rm[i] << " disconnected." << std::endl;
+	}
+	_clients2rm.clear();
+}
+
+std::string	Server::readStream(int client_fd)
+{
+	char		buffer[BUFFER_SIZE];
+	size_t		bytes_read = read(client_fd, buffer, BUFFER_SIZE);
+	std::string	stored_stream = _clients[client_fd].getStream();
+
+	if (bytes_read > 0)
+	{
+		stored_stream.append(buffer, bytes_read);
+		_clients[client_fd].setLastActivity(); 
+		return (stored_stream);
+	}
+	else if (bytes_read == 0)
+		return ("");
+	else
+		throw std::runtime_error("Error: read() failed on client");
+}
+
+size_t	Server::findcrfl(const std::string &stream)
+{
+	return (stream.find("\r\n"));
+}
+
+void	Server::readClients()
+{
+	const std::vector<int>	&read_clients = _event_manager.readableClients();
+	std::string				stream;
+	size_t					pos;
+
+	for (size_t i = 0; i < read_clients.size(); i++)
+	{
+		stream = "";
+		try
+		{
+			stream = readStream(read_clients[i]);
+		}
+		catch (const std::runtime_error &e)
+		{
+			std::cerr << e.what();
+			_clients2rm.push_back(read_clients[i]);
+			continue ;
+		}
+		if (stream == "")
+			_clients2rm.push_back(read_clients[i]);
+		else
+		{
+			pos = findcrfl(stream);
+			while (pos != std::string::npos)
+			{
+				_clients[read_clients[i]].setStream(stream.substr(0, pos));
+				std::cout << "Complete message received: " << _clients[read_clients[i]].getStream() << std::endl;
+				// parse and put message object within client at _clients[read_clients[i]]
+				stream.erase(0, pos + 2);
+				pos = findcrfl(stream);
+			}
+			_clients[read_clients[i]].setStream(stream);
+		}
 	}
 }
 
@@ -126,6 +193,7 @@ void	Server::run(const int &port, const std::string &password)
 			continue ;
 		}
 		acceptClients();
+		readClients();
 		removeClients();
 	}
 	std::cout << "\nSIGINT received. Initiating server shutdown..." << '\n';
