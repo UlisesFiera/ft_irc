@@ -1,50 +1,43 @@
 #include "message/Message.hpp"
 
-Message::Message(std::string message)
+Message::Message()
 {
-	if (!message.empty() && message[message.size() - 1] == '\n') message.erase(message.size() - 1);
-	if (!message.empty() && message[message.size() - 1] == '\r') message.erase(message.size() - 1);
+	_trailing = "";
+	_cmd = NONE;
+}
 
-	size_t trailing_pos = message.find(" :");
-	if (trailing_pos != std::string::npos)
-	{
-		_trailing = message.substr(trailing_pos + 2);
-		message = message.substr(0, trailing_pos); 
-	}
+Message::Message(std::string stream)
+{
+	_trailing = "";
+	_stream = stream;
+	_cmd = NONE;
+}
 
-	size_t start = 0;
-	size_t end = message.find(' ');
+Message::Message(const Message &copyMessage)
+{
+	_command = copyMessage._command;
+	_params = copyMessage._params;
+	_trailing = copyMessage._trailing;
+	_cmd = copyMessage._cmd;
+}
 
-	if (end != std::string::npos)
+Message &Message::operator=(const Message &copyMessage)
+{
+	if (this != &copyMessage)
 	{
-		_command = message.substr(start, end - start);
-		start = end + 1;
-		
-		while ((end = message.find(' ', start)) != std::string::npos)
-		{
-			if (end != start) {
-				_params.push_back(message.substr(start, end - start));
-			}
-			start = end + 1;
-		}
-		
-		if (start < message.size()) {
-			_params.push_back(message.substr(start));
-		}
+		_command = copyMessage._command;
+		_params = copyMessage._params;
+		_trailing = copyMessage._trailing;
+		_cmd = copyMessage._cmd;
 	}
-	else
-	{
-		_command = message;
-	}
+	return (*this);
 }
 
 Message::~Message() {}
 
-
-
-std::string	Message::getCommand() const
+commands	Message::getCommand() const
 {
-	return _command;
+	return _cmd;
 }
 
 std::vector<std::string> Message::getParams() const
@@ -55,4 +48,68 @@ std::vector<std::string> Message::getParams() const
 std::string	Message::getTrailing() const
 {
 	return _trailing;
+}
+
+commands Message::resolveCommand()
+{
+	if (_command == "NICK")
+		return NICK;
+	if (_command == "PASS")
+		return PASS;
+	if (_command == "USER")
+		return USER;
+	if (_command == "JOIN")
+		return JOIN;
+	if (_command == "PRIVMSG")
+		return PRIVMSG;
+	if (_command == "KICK")
+		return KICK;
+	if (_command == "INVITE")
+		return INVITE;
+	if (_command == "TOPIC")
+		return TOPIC;
+	if (_command == "MODE")
+		return MODE;
+	else
+		return INVALID;
+}
+
+void	Message::findTrailing()
+{
+	size_t	trailing_pos = _stream.find(" :");
+
+	if (trailing_pos != std::string::npos)
+	{
+		_trailing = _stream.substr(trailing_pos + 2);
+		_stream = _stream.substr(0, trailing_pos); 
+	}
+}
+
+void	Message::parseMessage()
+{
+	size_t	end = _stream.find(' ');
+	size_t	start = 0;
+
+	if (end != std::string::npos)
+	{
+		_command = _stream.substr(start, end - start);
+		start = end + 1;
+		while ((end = _stream.find(' ', start)) != std::string::npos)
+		{
+			if (end != start)
+				_params.push_back(_stream.substr(start, end - start));
+			start = end + 1;
+		}
+		if (start < _stream.size())
+			_params.push_back(_stream.substr(start));
+	}
+	else
+		_command = _stream;
+}
+
+void	Message::parse()
+{
+	parseMessage();
+	findTrailing();
+	_cmd = resolveCommand();
 }

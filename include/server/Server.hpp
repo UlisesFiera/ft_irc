@@ -13,6 +13,7 @@
 # include "message/Message.hpp"
 
 # define BUFFER_SIZE 1024
+# define NICK_SIZE 9
 
 class Server
 {
@@ -29,6 +30,7 @@ class Server
 		// Variables
 		
 		int						_port;
+		std::string				_host;
 		std::string				_password;
 		Socket					_listening_socket;
 		EventManager			_event_manager;
@@ -41,16 +43,18 @@ class Server
 		void					acceptClients();
 		void					readClients();
 		std::string				readStream(int client_fd);
+		void					registerClients();
+		void					respondClients();
+		void					respond(Response &response, int client_fd);
+		void					checkWritingDone();
 		void					removeClients();
 		size_t					findcrfl(const std::string &stream);
-
-		void					executeCommand(int client_fd, const Message &msg);
-/*		
-		void					handleNick(int client_fd, const Message &msg);
-		void					handleUser(int client_fd, const Message &msg);
-		void					handleJoin(int client_fd, const Message &msg);
-		void					handlePrivmsg(int client_fd, const Message &msg);
-*/
+		void					executeCommands();
+		void					execute(Client &client, const Message &message, const commands &command);
+		void					registerPass(Client &client, const Message &message);
+		void					registerNick(Client &client, const Message &message);
+		void					registerUser(Client &client, const Message &message);
+		bool					nickSyntax(const std::string &nick);
 };
 
 #endif

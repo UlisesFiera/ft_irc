@@ -5,5 +5,6 @@ echo "Enter the commit message (no quotes needed):"
 read message
 
 make fclean
-git add -A
+git add .
 git commit -m "$message"
+git push
