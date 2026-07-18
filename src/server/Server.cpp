@@ -49,7 +49,7 @@ void	Server::signal_handler(int signum)
 
 int	Server::nick2fd()
 {
-	
+
 }
 
 void	Server::execute(Client &client, const Message &message, const commands &command)
@@ -67,6 +67,7 @@ void	Server::execute(Client &client, const Message &message, const commands &com
 			changeNick(client, message);
 			break ;
 		case JOIN:
+			joinChannel(client, message);
 			break ;
 		case PRIVMSG:
 			sendPrivmsg();

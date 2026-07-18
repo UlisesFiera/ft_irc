@@ -33,6 +33,7 @@ class Message
 		std::string					getTrailing() const;
 
 		void						parse();
+		
 	private:
 		void						parseMessage();
 		void						findTrailing();

@@ -12,6 +12,7 @@
 # include "client/Client.hpp"
 # include "message/Message.hpp"
 # include "utils/utils.hpp"
+# include "channel/Channel.hpp"
 
 # define BUFFER_SIZE 1024
 # define NICK_SIZE 9
@@ -30,36 +31,39 @@ class Server
 	private:
 		// Variables
 		
-		int						_port;
-		std::string				_host;
-		std::string				_password;
-		Socket					_listening_socket;
-		EventManager			_event_manager;
-		std::map<int, Client>	_clients;
-		std::vector<int>		_clients2rm;
+		int								_port;
+		std::string						_host;
+		std::string						_password;
+		Socket							_listening_socket;
+		EventManager					_event_manager;
+		std::map<int, Client>			_clients;
+		std::vector<int>				_clients2rm;
+		std::map<std::string, Channel>	_channels;
 
 		// Functions
-		void					initListeningSocket();
-		static void				signal_handler(int signum);
-		void					acceptClients();
-		void					readClients();
-		std::string				readStream(int client_fd);
-		void					registerClients();
-		void					respondClients();
-		void					respond(Response &response, int client_fd);
-		void					checkWritingDone();
-		void					removeClients();
-		size_t					findcrfl(const std::string &stream);
-		void					executeCommands();
-		void					execute(Client &client, const Message &message, const commands &command);
-		void					registerPass(Client &client, const Message &message);
-		bool					registerNick(Client &client, const Message &message);
-		void					registerUser(Client &client, const Message &message);
-		bool					nickSyntax(const std::string &nick);
+		void							initListeningSocket();
+		static void						signal_handler(int signum);
+		void							acceptClients();
+		void							readClients();
+		std::string						readStream(int client_fd);
+		void							registerClients();
+		void							respondClients();
+		void							respond(Response &response, int client_fd);
+		void							checkWritingDone();
+		void							removeClients();
+		size_t							findcrfl(const std::string &stream);
+		void							executeCommands();
+		void							execute(Client &client, const Message &message, const commands &command);
+		void							registerPass(Client &client, const Message &message);
+		void							registerNick(Client &client, const Message &message);
+		void							registerUser(Client &client, const Message &message);
+		bool							nickSyntax(const std::string &nick);
 
 		// Commands
-		void					changeNick(Client &client, const Message &message);
-		void					sendPrivmsg(Client &client, const Message &message);
+		void							joinChannel(Client &client, const Message &message);
+		bool							checkChannel(const std::string &name);
+		void							changeNick(Client &client, const Message &message);
+		void							sendPrivmsg(Client &client, const Message &message);
 };
 
 #endif
