@@ -69,7 +69,7 @@ class Response
 		void						setBytesSent(const int &bytes);
 	private:
 		void						buildNumericResponse();
-		void						buildStreamingResponse();
+		void						buildStreamingResponse(const Message &message);
 		std::string					getCommandString(const commands &command);
 		std::string					header();
 

@@ -48,7 +48,7 @@ Response::Response(const Client &client, const Message &message)
 		_nick = "*";
 	if (_user == "")
 		_user = "*";
-	buildStreamingResponse();
+	buildStreamingResponse(message);
 }
 
 // copy constructors
@@ -136,7 +136,7 @@ std::string	Response::getCommandString(const commands &command)
 	}
 }
 
-void	Response::buildStreamingResponse()
+void	Response::buildStreamingResponse(const Message &message)
 {
 	std::string	response;
 	std::string prefix = ":" + _nick + "!" + _user + "@" + _host;
@@ -144,20 +144,19 @@ void	Response::buildStreamingResponse()
 	response = prefix + " " + getCommandString(_command);
 	if (_command != NICK && _command != INVITE)
 	{	
-		for (std::vector<std::string>::const_iterator it = _params.begin(); it != _params.end(); ++it)
-			response += " " + *it;
+		response += " " + _params;
 		if (!_trailing.empty())
 			response += " :" + _trailing;
 	}
 	else if (_command != NICK)
 	{
-		_trailing = _params[0];
+		_trailing = message.getParams()[0];
 		response += " :" + _trailing;
 	}
 	else if (_command != INVITE)
 	{
-		response += " " + _params[0];
-		_trailing = _params[1];
+		response += " " + message.getParams()[0];
+		_trailing = message.getParams()[1];
 		response += " :" + _trailing;
 	}
 	response += "\r\n";

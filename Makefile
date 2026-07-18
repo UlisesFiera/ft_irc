@@ -16,6 +16,7 @@ SRCS		= 	src/main.cpp\
 				src/server/commands/ServerNick.cpp\
 				src/server/commands/ServerPrivmsg.cpp\
 				src/server/commands/ServerTopic.cpp\
+				src/server/Socket.cpp\
 				src/message/Message.cpp\
 				src/response/Response.cpp\
 				src/utils/printcrlf.cpp\

@@ -12,6 +12,6 @@ void	Server::changeNick(Client &client, const Message &message)
 		client.setResponse(Response(client, message));
 		return ;
 	}
-	if (registerNick(message.getParams()[0]))
+	if (registerNick(client, message))
 		client.setResponse(Response(client, message));
 }
