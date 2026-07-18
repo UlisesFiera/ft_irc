@@ -51,7 +51,8 @@ class Response
 	public:
 		// constructors
 		Response();
-		Response(const Client &client, const Message &message);
+		Response(const Client &client, const Message &message, const int &target);
+		Response(const Client &client, const Message &message, const std::vector<int> &targets);
 		Response(const Client &client, const Message &message, const ReplyCode &code);
 
 		// copy constructors
@@ -65,11 +66,12 @@ class Response
 
 		const std::string			&getResponse() const;
 		const size_t				&getBytesSent() const;
+		std::vector<int>			&getTargets() const;
 
 		void						setBytesSent(const int &bytes);
 	private:
 		void						buildNumericResponse();
-		void						buildStreamingResponse();
+		void						buildStreamingResponse(const Message &message);
 		std::string					getCommandString(const commands &command);
 		std::string					header();
 
@@ -83,6 +85,8 @@ class Response
 		std::string					_params;
 		std::string					_response;
 		size_t						_bytes_sent;
+		std::string					_trailing;
+		std::vector<int>			_targets;
 };
 
 #endif

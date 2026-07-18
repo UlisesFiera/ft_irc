@@ -37,8 +37,6 @@ Server& Server::operator=(const Server &other)
 
 Server::~Server() {}
 
-// Functions
-
 sig_atomic_t	stop_server = 0;
 
 void	Server::signal_handler(int signum)
@@ -47,63 +45,7 @@ void	Server::signal_handler(int signum)
 		stop_server = 1;
 }
 
-void	Server::execute(Client &client, const Message &message, const commands &command)
-{
-	if (command == USER || command == PASS)
-		return ;
-	if (!client.isRegistered())
-	{
-		client.setResponse(Response(client, message, ERR_NOTREGISTERED));
-		return ;
-	}
-	switch (message.getCommand())
-	{
-		case NICK:
-			std::cout << "Nick" << std::endl;
-			// funcion
-		case JOIN:
-			joinChannel(client, message);
-			break ;
-		case PRIVMSG:
-			std::cout << "Topic" << std::endl;
-			// funcion
-			break ;
-		case KICK:
-			std::cout << "Mode" << std::endl;
-			// funcion
-			break ;
-		case INVITE:
-			std::cout << "Invite" << std::endl;
-			// funcion
-			break ;
-		case TOPIC:
-			std::cout << "Topic" << std::endl;
-			// funcion
-			break ;
-		case MODE:
-			std::cout << "Mode" << std::endl;
-			// funcion
-			break ;
-		case INVALID:
-			client.setResponse(Response(client, message, ERR_UNKNOWNCOMMAND));
-			break ;
-		default:
-			client.setResponse(Response(client, message, ERR_UNKNOWNCOMMAND));
-			break ;
-	}
-}
-
-void	Server::executeCommands()
-{
-	std::map<int, Client>::iterator	it;
-
-	for (it = _clients.begin(); it != _clients.end(); it++)
-	{
-		for (size_t j = 0; j < it->second.getMessages().size(); j++)
-			execute(it->second, it->second.getMessages()[j], it->second.getMessages()[j].getCommand());
-		it->second.getMessages().clear();
-	}
-}
+// Functions
 
 void	Server::removeClients()
 {
@@ -162,100 +104,58 @@ void	Server::respondClients()
 	for (size_t i = 0; i < write_clients.size(); i++)
 	{
 		for (size_t j = 0; j < _clients[write_clients[i]].getResponses().size(); j++)
-			respond(_clients[write_clients[i]].getResponses()[j], write_clients[i]);
+			for (size_t z = 0; z < _clients[write_clients[i]].getResponses()[j].getTargets().size(); z++)
+				respond(_clients[write_clients[i]].getResponses()[j], _clients[write_clients[i]].getResponses()[j].getTargets()[z]);
 	}
 }
 
-void	Server::registerPass(Client &client, const Message &message)
+void	Server::execute(Client &client, const Message &message, const commands &command)
 {
-	std::string	pass;
-
-	if (message.getCommand() != PASS)
+	if (command == USER || command == PASS)
 		return ;
-	if (message.getParams().empty())
+	if (!client.isRegistered())
 	{
-		client.setResponse(Response(client, message, ERR_NEEDMOREPARAMS));
+		client.setResponse(Response(client, message, ERR_NOTREGISTERED));
 		return ;
 	}
-	pass = message.getParams()[0];
-	if (pass == _password)
-		client.setPass(pass);
-	else
+	switch (message.getCommand())
 	{
-		client.setResponse(Response(client, message, ERR_PASSWDMISMATCH));
-		return ;
+		case NICK:
+			changeNick(client, message);
+			break ;
+		case JOIN:
+			joinChannel(client, message);
+			break ;
+		case PRIVMSG:
+			sendPrivmsg();
+			break ;
+		case KICK:
+			break ;
+		case INVITE:
+			break ;
+		case TOPIC:
+			break ;
+		case MODE:
+			break ;
+		case INVALID:
+			client.setResponse(Response(client, message, ERR_UNKNOWNCOMMAND));
+			break ;
+		default:
+			client.setResponse(Response(client, message, ERR_UNKNOWNCOMMAND));
+			break ;
 	}
 }
 
-bool	Server::nickSyntax(const std::string &nick)
-{
-	if (nick.empty())
-		return (false);
-	
-	char		c = nick[0];
-	std::string	rem = nick.substr(1);
-
-	if (nick.size() > NICK_SIZE)
-		return (false);
-	if (!(c >= 'a' && c <= 'z') && !(c >= 'A' && c <= 'Z') 
-		&& std::string("[]\\_^{}|`").find(c) == std::string::npos)
-		return (false);
-	for (size_t i = 0; i < rem.size(); i++)
-	{
-		c = rem[i];
-		if (!(c >= 'a' && c <= 'z') && !(c >= 'A' && c <= 'Z')
-			&& !(c >= '0' && c <= '9') && c != '-'
-			&& std::string("[]\\_^{}|`").find(c) == std::string::npos)
-			return (false);
-	}
-	return (true);
-}
-
-void	Server::registerNick(Client &client, const Message &message)
+void	Server::executeCommands()
 {
 	std::map<int, Client>::iterator	it;
 
-	if (message.getCommand() != NICK)
-		return ;
-	if (message.getParams().empty())
-	{
-		client.setResponse(Response(client, message, ERR_NONICKNAMEGIVEN));
-		return ;
-	}
-	if (message.getParams().size() > 1 || !nickSyntax(message.getParams()[0]))
-	{
-		client.setResponse(Response(client, message, ERR_ERRONEUSNICKNAME));
-		return ;
-	}
 	for (it = _clients.begin(); it != _clients.end(); it++)
 	{
-		if (it->second.getNick() == message.getParams()[0])
-		{
-			client.setResponse(Response(client, message, ERR_NICKNAMEINUSE));
-			return ;
-		}
+		for (size_t j = 0; j < it->second.getMessages().size(); j++)
+			execute(it->second, it->second.getMessages()[j], it->second.getMessages()[j].getCommand());
+		it->second.getMessages().clear();
 	}
-	client.setNick(message.getParams()[0]);
-}
-
-void	Server::registerUser(Client &client, const Message &message)
-{
-	std::string	user;
-
-	if (message.getCommand() != USER)
-		return ;
-	if (message.getParams().size() != 4)
-	{
-		client.setResponse(Response(client, message, ERR_NEEDMOREPARAMS));
-		return ;
-	}
-	if (client.getUser() != "")
-	{
-		client.setResponse(Response(client, message, ERR_ALREADYREGISTERED));
-		return ;
-	}
-	user = message.getParams()[0] + message.getParams()[1] + message.getParams()[2] + message.getParams()[3];
-	client.setUser(user);
 }
 
 void	Server::registerClients()
@@ -287,6 +187,8 @@ std::string	Server::readStream(int client_fd)
 	ssize_t		bytes_read = read(client_fd, buffer, BUFFER_SIZE);
 	std::string	stored_stream = _clients[client_fd].getStream();
 
+	std::cout << "Stream received: " << std::endl;
+	printcrlf(buffer);
 	if (bytes_read > 0)
 	{
 		stored_stream.append(buffer, bytes_read);
@@ -301,11 +203,6 @@ std::string	Server::readStream(int client_fd)
 			return ("");
 		throw std::runtime_error("Read() failed");
 	}
-}
-
-size_t	Server::findcrfl(const std::string &stream)
-{
-	return (stream.find("\r\n"));
 }
 
 void	Server::readClients()

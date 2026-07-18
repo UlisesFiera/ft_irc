@@ -36,7 +36,8 @@ class Client
 		const std::string				&getUser() const;
 		std::vector<Response>			&getResponses();
 		const std::string				&getHost() const;
-		std::vector<std::string>		&getChannels();
+		std::vector<Channel>			&getChannels();
+		Channel							&getChannel(const std::string &channel) const;
 
 		// setters
 		void 							setLastActivity();
@@ -49,7 +50,7 @@ class Client
 		void							setUser(const std::string &user);
 		void							setResponse(const Response &response);
 		void							setHost(const std::string &host);
-		void							setChannels(const std::string &channel);
+		void							setChannel(const Channel &channel);
 
 	private:
 		std::string						_host;
@@ -62,7 +63,7 @@ class Client
 		std::string						_nick;
 		std::string						_user;
 		std::vector<Response>			_responses;
-		std::vector<std::string>		_channels_joined;
+		std::vector<Channel>			_channels_joined;
 };
 
 #endif

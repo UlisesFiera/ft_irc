@@ -7,18 +7,21 @@ STD_FLAGS 	= 	-Wall -Wextra -Werror -g
 SRCS		= 	src/main.cpp\
 				src/client/Client.cpp\
 				src/channel/Channel.cpp\
-				src/server/EventManager.cpp\
+				src/events/EventManager.cpp\
+				src/events/Socket.cpp\
 				src/server/Server.cpp\
-				src/server/Socket.cpp\
+				src/server/commands/ServerAuth.cpp\
 				src/server/commands/ServerInvite.cpp\
 				src/server/commands/ServerJoin.cpp\
 				src/server/commands/ServerKick.cpp\
-				src/server/commands/ServerMode.cpp\
+				src/server/commands/ServerModer.cpp\
 				src/server/commands/ServerNick.cpp\
 				src/server/commands/ServerPrivmsg.cpp\
 				src/server/commands/ServerTopic.cpp\
+				src/server/ServerUtils.cpp\
 				src/message/Message.cpp\
 				src/response/Response.cpp\
+				src/utils/printcrlf.cpp\
 
 REMOVE		= 	rm -f ${OBJS}
 
@@ -56,6 +59,7 @@ fclean: clean
 	@rm -f ${NAME}
 	@rm -rf ${OBJDIR}
 	@printf "\r\033[32m[OK]\033[0m removed executables                \n"
+	@rm -f ircserv.dSYM
 				
 re:	fclean all
 

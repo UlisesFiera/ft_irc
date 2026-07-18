@@ -18,6 +18,7 @@ Response::Response()
 
 Response::Response(const Client &client, const Message &message, const ReplyCode &code)
 {
+	_targets.push_back(-1);
 	_bytes_sent = 0;
 	_reply_code = code;
 	_host = client.getHost();
@@ -26,6 +27,7 @@ Response::Response(const Client &client, const Message &message, const ReplyCode
 	for (size_t i = 0; message.getParams().size(); i++)
 		_params += message.getParams()[i] + " ";
 	_command = message.getCommand();
+	_trailing = message.getTrailing();
 	if (_nick == "")
 		_nick = "*";
 	if (_user == "")
@@ -33,8 +35,17 @@ Response::Response(const Client &client, const Message &message, const ReplyCode
 	buildNumericResponse();
 }
 
-Response::Response(const Client &client, const Message &message)
+Response::Response(const Client &client, const Message &message, const int &target)
 {
+	std::vector<int>	v;
+
+	v.push_back(target);
+	Response(client, message, v);
+}
+
+Response::Response(const Client &client, const Message &message, const std::vector<int> &targets)
+{
+	_targets = targets;
 	_bytes_sent = 0;
 	_host = client.getHost();
 	_nick = client.getNick();
@@ -42,11 +53,12 @@ Response::Response(const Client &client, const Message &message)
 	for (size_t i = 0; message.getParams().size(); i++)
 		_params += message.getParams()[i] + " ";
 	_command = message.getCommand();
+	_trailing = message.getTrailing();
 	if (_nick == "")
 		_nick = "*";
 	if (_user == "")
 		_user = "*";
-	buildStreamingResponse();
+	buildStreamingResponse(message);
 }
 
 // copy constructors
@@ -63,6 +75,8 @@ Response::Response(const Response& copyResponse)
 	_response = copyResponse._response;
 	_bytes_sent = copyResponse._bytes_sent;
 	_params = copyResponse._params;
+	_trailing = copyResponse._trailing;
+	_targets = copyResponse._targets;
 }
 
 // operator overrides
@@ -81,6 +95,8 @@ Response& Response::operator=(const Response& copyResponse)
 		_response = copyResponse._response;
 		_bytes_sent = copyResponse._bytes_sent;
 		_params = copyResponse._params;
+		_trailing = copyResponse._trailing;
+		_targets = copyResponse._targets;
 	}
 	return (*this);
 }
@@ -93,6 +109,11 @@ Response::~Response()
 }
 
 //// non-canon methods
+
+std::vector<int>	&Response::getTargets() const
+{
+	return (_targets);
+}
 
 const size_t	&Response::getBytesSent() const
 {
@@ -132,14 +153,30 @@ std::string	Response::getCommandString(const commands &command)
 	}
 }
 
-void	Response::buildStreamingResponse()
+void	Response::buildStreamingResponse(const Message &message)
 {
 	std::string	response;
+	std::string prefix = ":" + _nick + "!" + _user + "@" + _host;
 
-	response = ":" + _nick + "!" + _user + "@" + _host + " " + getCommandString(_command) + " " + _destination;
-	if (_message != "")
-		response += ":" + _message + "\r\n";
-	_response = response;
+	response = prefix + " " + getCommandString(_command);
+	if (_command != NICK && _command != INVITE)
+	{	
+		response += " " + _params;
+		if (!_trailing.empty())
+			response += " :" + _trailing;
+	}
+	else if (_command != NICK)
+	{
+		_trailing = message.getParams()[0];
+		response += " :" + _trailing;
+	}
+	else if (_command != INVITE)
+	{
+		response += " " + message.getParams()[0];
+		_trailing = message.getParams()[1];
+		response += " :" + _trailing;
+	}
+	response += "\r\n";
 }
 
 std::string	Response::header()
@@ -220,6 +257,7 @@ void	Response::buildNumericResponse()
 			response += ":Unknown reply";
 			break ;
 	}
+
 	response += "\r\n";
 	_response = response;
 }

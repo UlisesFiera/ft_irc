@@ -7,10 +7,11 @@
 # include <arpa/inet.h>
 # include <algorithm>
 
-# include "server/Socket.hpp"
-# include "server/EventManager.hpp"
+# include "events/Socket.hpp"
+# include "events/EventManager.hpp"
 # include "client/Client.hpp"
 # include "message/Message.hpp"
+# include "utils/utils.hpp"
 # include "channel/Channel.hpp"
 
 # define BUFFER_SIZE 1024
@@ -25,7 +26,7 @@ class Server
 		~Server();
 
 		// Functions
-		void					run(const int &port, const std::string &password);
+		void							run(const int &port, const std::string &password);
 
 	private:
 		// Variables
@@ -50,17 +51,25 @@ class Server
 		void							respond(Response &response, int client_fd);
 		void							checkWritingDone();
 		void							removeClients();
-		size_t							findcrfl(const std::string &stream);
 		void							executeCommands();
 		void							execute(Client &client, const Message &message, const commands &command);
 		void							registerPass(Client &client, const Message &message);
 		void							registerNick(Client &client, const Message &message);
 		void							registerUser(Client &client, const Message &message);
-		bool							nickSyntax(const std::string &nick);
 
 		// Commands
 		void							joinChannel(Client &client, const Message &message);
 		bool							checkChannel(const std::string &name);
+		void							changeNick(Client &client, const Message &message);
+		void							sendPrivmsg(Client &client, const Message &message);
+		bool							nickSyntax(const std::string &nick);
+
+		// Utils
+		const std::string				&isMember(const std::string &nick);
+		int								nick2fd(const std::string &nick);
+		size_t							findcrfl(const std::string &stream);
+		void							createStreamingResponse(const Client &client, const Message &message, const std::vector<std::string> &channel);
+		void							createStreamingResponse(const Client &client, const Message &message, const int &target);
 };
 
 #endif
