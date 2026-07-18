@@ -16,8 +16,17 @@ Response::Response()
 	_bytes_sent = 0;
 }
 
-Response::Response(const Client &client, const Message &message, const ReplyCode &code)
+Response::Response(const Client &client, const Message &message, const ReplyCode &code, const int &target)
 {
+	std::vector<int>	v;
+
+	v.push_back(target);
+	Response(client, message, code, v);
+}
+
+Response::Response(const Client &client, const Message &message, const ReplyCode &code, const std::vector<int> &targets)
+{
+	_targets = targets;
 	_bytes_sent = 0;
 	_reply_code = code;
 	_host = client.getHost();
@@ -34,8 +43,17 @@ Response::Response(const Client &client, const Message &message, const ReplyCode
 	buildNumericResponse();
 }
 
-Response::Response(const Client &client, const Message &message)
+Response::Response(const Client &client, const Message &message, const int &target)
 {
+	std::vector<int>	v;
+
+	v.push_back(target);
+	Response(client, message, v);
+}
+
+Response::Response(const Client &client, const Message &message, const std::vector<int> &targets)
+{
+	_targets = targets;
 	_bytes_sent = 0;
 	_host = client.getHost();
 	_nick = client.getNick();
@@ -66,6 +84,7 @@ Response::Response(const Response& copyResponse)
 	_bytes_sent = copyResponse._bytes_sent;
 	_params = copyResponse._params;
 	_trailing = copyResponse._trailing;
+	_targets = copyResponse._targets;
 }
 
 // operator overrides
@@ -85,6 +104,7 @@ Response& Response::operator=(const Response& copyResponse)
 		_bytes_sent = copyResponse._bytes_sent;
 		_params = copyResponse._params;
 		_trailing = copyResponse._trailing;
+		_targets = copyResponse._targets;
 	}
 	return (*this);
 }

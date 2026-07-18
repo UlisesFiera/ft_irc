@@ -84,6 +84,7 @@ class Response
 		std::string					_response;
 		size_t						_bytes_sent;
 		std::string					_trailing;
+		std::vector<int>			_targets;
 };
 
 #endif

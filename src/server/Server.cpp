@@ -47,6 +47,11 @@ void	Server::signal_handler(int signum)
 		stop_server = 1;
 }
 
+int	Server::nick2fd()
+{
+	
+}
+
 void	Server::execute(Client &client, const Message &message, const commands &command)
 {
 	if (command == USER || command == PASS)
@@ -59,10 +64,12 @@ void	Server::execute(Client &client, const Message &message, const commands &com
 	switch (message.getCommand())
 	{
 		case NICK:
+			changeNick(client, message);
 			break ;
 		case JOIN:
 			break ;
 		case PRIVMSG:
+			sendPrivmsg();
 			break ;
 		case KICK:
 			break ;

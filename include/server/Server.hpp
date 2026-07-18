@@ -59,6 +59,7 @@ class Server
 
 		// Commands
 		void					changeNick(Client &client, const Message &message);
+		void					sendPrivmsg(Client &client, const Message &message);
 };
 
 #endif
