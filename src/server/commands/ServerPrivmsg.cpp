@@ -11,7 +11,7 @@ void	Server::sendPrivmsg(Client &client, const Message &message)
 	if (message.getParams().size() != 2)
 	{
 		client.setResponse(Response(client, message, ERR_NEEDMOREPARAMS));
-		break ;
+		return ;
 	}
 	target = message.getParams()[0];
 	if (target[0] == '#')
@@ -24,8 +24,8 @@ void	Server::sendPrivmsg(Client &client, const Message &message)
 				createStreamingResponse(client, message, client.getChannels()[i].getMembers());
 				return ;
 			}
-				
 		}
+		client.setResponse(Response(client, message, ERR_CANNOTSENDTOCHAN));
 	}
 	else
 	{

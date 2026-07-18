@@ -17,18 +17,7 @@ size_t	Server::findcrfl(const std::string &stream)
 	return (stream.find("\r\n"));
 }
 
-const std::string	&Server::isMember(const std::string &nick)
-{
-	std::vector<std::string>			v;
-	std::vector<std::string>::iterator	it = std::find(_channels.begin(), _channels.end(), nick);
-
-	if (it != v.end())
-		return (*it);
-	else
-		return ("");
-}
-
-void	Server::createStreamingResponse(const Client &client, const Message &message, const std::vector<std::string> &channel)
+void	Server::createStreamingResponse(Client &client, const Message &message, const std::vector<std::string> &channel)
 {
 	for (size_t i = 0; i < channel.size(); i++)
 	{	
@@ -37,9 +26,8 @@ void	Server::createStreamingResponse(const Client &client, const Message &messag
 	}
 }
 
-void	Server::createStreamingResponse(const Client &client, const Message &message, const int &target)
+void	Server::createStreamingResponse(Client &client, const Message &message, const int &target)
 {
-	if (target != client.getNick())
-		_event_manager.update(nick2fd(target), POLLOUT);
-	client.setResponse(Response(client, message, nick2fd(target)));
+	_event_manager.update(target, POLLOUT);
+	client.setResponse(Response(client, message, target));
 }

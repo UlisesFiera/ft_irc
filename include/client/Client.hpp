@@ -37,7 +37,7 @@ class Client
 		std::vector<Response>			&getResponses();
 		const std::string				&getHost() const;
 		std::vector<Channel>			&getChannels();
-		Channel							&getChannel(const std::string &channel) const;
+		Channel							getChannel(const std::string &channel);
 
 		// setters
 		void 							setLastActivity();
