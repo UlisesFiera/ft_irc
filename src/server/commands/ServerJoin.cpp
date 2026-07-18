@@ -37,7 +37,31 @@ void Server::joinChannel(Client &client, const Message &message)
 	
 	else
 	{
-		std::cout << "[JOIN] Client " << client.getNick() << " joined channel " << channel_name << std::endl;
+		//std::cout << "[JOIN] Client " << client.getNick() << " joined channel " << channel_name << std::endl;
+		if (_channels[channel_name].getPassword() != "")
+		{
+			if (message.getParams()[1] == "" || _channels[channel_name].checkPassword(message.getParams()[1]))
+			{
+				client.setResponse(Response(client, message, ERR_BADCHANNELKEY));
+				return;
+			}
+		}
+
+		if (_channels[channel_name].getUserLimit() >= _channels[channel_name].getMembers().size())
+		{
+			client.setResponse(Response(client, message, ERR_CHANNELISFULL));
+			return;
+		}
+
+		if (_channels[channel_name].getInviteOnly() == true)
+		{
+			if (!(_channels[channel_name].isInvited(client.getNick())))
+			{
+				client.setResponse(Response(client, message, ERR_INVITEONLYCHAN));
+				return;
+			}
+		}
+
 		_channels[channel_name].setMembers(client.getNick());
 	}
 }

@@ -21,7 +21,7 @@ class Channel
 		bool   						getTopicRestricted() const;
 		std::string					getPassword() const;
 		size_t						getUserLimit() const;
-		std::vector<int>			getInviteFDs() const;
+		std::vector<std::string>	getInvitedNicks() const;
 		std::vector<int>			getOperatorFDs() const;
 
 		void    					setName(std::string name);
@@ -30,11 +30,12 @@ class Channel
 		void    					setTopicRestricted(bool restricted);
 		void    					setPassword(std::string password);
 		void    					setUserLimit(size_t limit);
-		void						setInviteFDs(std::vector<int> inviteFDs);
+		void						setInvitedNicks(std::vector<std::string> invitedNicks);
 		void						setOperatorFDs(std::vector<int> operatorFDs);
 
 		bool						checkName(const std::string &name) const;
 		bool    					checkPassword(const std::string &password) const;
+		bool						isInvited(const std::string &nick) const;
 
 	private:
 		std::string					_name;
@@ -43,7 +44,7 @@ class Channel
 		bool                		_topicRestricted; // Modo +t
 		std::string         		_password;        // Modo +k (vacío si no hay)
 		size_t              		_userLimit;       // Modo +l (0 significa sin límite)
-		std::vector<int>    		_invitedFDs;      // Lista blanca para el modo +i
+		std::vector<std::string>	_invitedNicks;    // Lista blanca para el modo +i
 		std::vector<int>    		_operatorFDs;     // Lista de administradores del canal (Modo +o)
 };
 

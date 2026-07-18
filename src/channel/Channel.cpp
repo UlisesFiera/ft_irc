@@ -18,7 +18,7 @@ Channel::Channel (const Channel &other)
 	_topicRestricted = other._topicRestricted;
 	_password = other._password;
 	_userLimit = other._userLimit;
-	_invitedFDs = other._invitedFDs;
+	_invitedNicks = other._invitedNicks;
 	_operatorFDs = other._operatorFDs;
 }
 
@@ -32,7 +32,7 @@ Channel &Channel::operator=(const Channel &other)
 		_topicRestricted = other._topicRestricted;
 		_password = other._password;
 		_userLimit = other._userLimit;
-		_invitedFDs = other._invitedFDs;
+		_invitedNicks = other._invitedNicks;
 		_operatorFDs = other._operatorFDs;
 	}
 	return *this;
@@ -71,9 +71,9 @@ size_t Channel::getUserLimit() const
 	return _userLimit;
 }
 
-std::vector<int> Channel::getInviteFDs() const
+std::vector<std::string> Channel::getInvitedNicks() const
 {
-	return _invitedFDs;
+	return _invitedNicks;
 }
 
 std::vector<int> Channel::getOperatorFDs() const
@@ -114,9 +114,9 @@ void Channel::setUserLimit(size_t limit)
 	_userLimit = limit;
 }
 
-void Channel::setInviteFDs(std::vector<int> inviteFDs)
+void Channel::setInvitedNicks(std::vector<std::string> invitedNicks)
 {
-	_invitedFDs = inviteFDs;
+	_invitedNicks = invitedNicks;
 }
 
 void Channel::setOperatorFDs(std::vector<int> operatorFDs)
@@ -148,4 +148,15 @@ bool Channel::checkPassword(const std::string &password) const
 		return true;
 	else
 		return false;
+}
+
+bool Channel::isInvited(const std::string &nick) const
+{
+	for (int i = 0; i < _invitedNicks.size(); i++)
+	{
+		if (this->getInvitedNicks()[i] == nick)
+			return 1;
+	}
+	
+	return 0;
 }
