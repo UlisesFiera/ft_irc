@@ -3,6 +3,11 @@
 
 # include <iostream>
 
+# include "message/Message.hpp"
+# include "response/Response.hpp"
+
+class Response;
+
 class Client 
 {
 	public:
@@ -21,17 +26,37 @@ class Client
 		// functions
 
 		// getters
-		time_t const		&getLastActivity() const;
-		std::string const	&getStream() const;
-
+		time_t const					&getLastActivity() const;
+		std::string const				&getStream() const;
+		std::vector<Message>			&getMessages();
+		bool const						&isRegistered() const;
+		const std::string				&getPass() const;
+		const std::string				&getNick() const;
+		const std::string				&getUser() const;
+		std::vector<Response>			&getResponses();
+		const std::string				&getHost() const;
 		// setters
-		void 				setLastActivity();
-		void				setPort(const int &port);
-		void				setStream(const std::string &stream);
+		void 							setLastActivity();
+		void							setPort(const int &port);
+		void							setStream(const std::string &stream);
+		void							setMessage(const std::string &stream);
+		void							setRegistered(const bool &status);
+		void							setPass(const std::string &pass);
+		void							setNick(const std::string &nick);
+		void							setUser(const std::string &user);
+		void							setResponse(const Response &response);
+		void							setHost(const std::string &host);
 	private:
-		int					_port;
-		time_t 				_lastActivity;
-		std::string			_stream;
-};		
+		std::string						_host;
+		int								_port;
+		time_t 							_lastActivity;
+		std::string						_stream;
+		std::vector<Message>			_messages;
+		bool							_registered;
+		std::string						_pass;
+		std::string						_nick;
+		std::string						_user;
+		std::vector<Response>			_responses;
+};
 
 #endif

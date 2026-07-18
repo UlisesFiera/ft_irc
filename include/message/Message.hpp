@@ -4,20 +4,45 @@
 # include <string>
 # include <vector>
 
+enum	commands
+{
+	INVALID,
+	NONE,
+	NICK,
+	PASS,
+	USER,
+	JOIN,
+	PRIVMSG,
+	KICK,
+	INVITE,
+	TOPIC,
+	MODE
+};
+
 class Message
 {
 	public:
-		Message(std::string raw_message);
+		Message();
+		Message(std::string stream);
+		Message(const Message &copyMessage);
+		Message &operator=(const Message &copyMessage);
 		~Message();
 
-		std::string					getCommand() const;
+		commands					getCommand() const;
 		std::vector<std::string>	getParams() const;
 		std::string					getTrailing() const;
 
+		void						parse();
 	private:
+		void						parseMessage();
+		void						findTrailing();
+		commands 					resolveCommand();
+
+		std::string					_stream;
 		std::string					_command;
 		std::vector<std::string>	_params;
 		std::string					_trailing;
+		commands					_cmd;
 };
 
 #endif

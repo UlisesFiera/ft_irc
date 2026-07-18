@@ -2,7 +2,7 @@ NAME 		= 	ircserv
 
 C++			= 	g++ -std=c++98 -Iinclude/
 
-STD_FLAGS 	= 	-Wall -Wextra -Werror -g0
+STD_FLAGS 	= 	-Wall -Wextra -Werror -g
 
 SRCS		= 	src/main.cpp\
 				src/client/Client.cpp\
@@ -10,6 +10,7 @@ SRCS		= 	src/main.cpp\
 				src/server/Server.cpp\
 				src/server/Socket.cpp\
 				src/message/Message.cpp\
+				src/response/Response.cpp\
 
 REMOVE		= 	rm -f ${OBJS}
 
