@@ -83,6 +83,7 @@ class Response
 		std::string					_params;
 		std::string					_response;
 		size_t						_bytes_sent;
+		std::string					_trailing;
 };
 
 #endif

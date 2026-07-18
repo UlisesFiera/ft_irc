@@ -8,7 +8,14 @@ SRCS		= 	src/main.cpp\
 				src/client/Client.cpp\
 				src/server/EventManager.cpp\
 				src/server/Server.cpp\
-				src/server/Socket.cpp\
+				src/server/commands/ServerAuth.cpp\
+				src/server/commands/ServerInvite.cpp\
+				src/server/commands/ServerJoin.cpp\
+				src/server/commands/ServerKick.cpp\
+				src/server/commands/ServerModer.cpp\
+				src/server/commands/ServerNick.cpp\
+				src/server/commands/ServerPrivmsg.cpp\
+				src/server/commands/ServerTopic.cpp\
 				src/message/Message.cpp\
 				src/response/Response.cpp\
 				src/utils/printcrlf.cpp\

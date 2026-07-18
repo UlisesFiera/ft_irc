@@ -59,11 +59,8 @@ void	Server::execute(Client &client, const Message &message, const commands &com
 	switch (message.getCommand())
 	{
 		case NICK:
-			std::cout << "Nick" << std::endl;
-			// funcion
+			break ;
 		case JOIN:
-			std::cout << "Join" << std::endl;
-			// funcion
 			break ;
 		case PRIVMSG:
 			break ;
@@ -155,98 +152,6 @@ void	Server::respondClients()
 		for (size_t j = 0; j < _clients[write_clients[i]].getResponses().size(); j++)
 			respond(_clients[write_clients[i]].getResponses()[j], write_clients[i]);
 	}
-}
-
-void	Server::registerPass(Client &client, const Message &message)
-{
-	std::string	pass;
-
-	if (message.getCommand() != PASS)
-		return ;
-	if (message.getParams().empty())
-	{
-		client.setResponse(Response(client, message, ERR_NEEDMOREPARAMS));
-		return ;
-	}
-	pass = message.getParams()[0];
-	if (pass == _password)
-		client.setPass(pass);
-	else
-	{
-		client.setResponse(Response(client, message, ERR_PASSWDMISMATCH));
-		return ;
-	}
-}
-
-bool	Server::nickSyntax(const std::string &nick)
-{
-	if (nick.empty())
-		return (false);
-	
-	char		c = nick[0];
-	std::string	rem = nick.substr(1);
-
-	if (nick.size() > NICK_SIZE)
-		return (false);
-	if (!(c >= 'a' && c <= 'z') && !(c >= 'A' && c <= 'Z') 
-		&& std::string("[]\\_^{}|`").find(c) == std::string::npos)
-		return (false);
-	for (size_t i = 0; i < rem.size(); i++)
-	{
-		c = rem[i];
-		if (!(c >= 'a' && c <= 'z') && !(c >= 'A' && c <= 'Z')
-			&& !(c >= '0' && c <= '9') && c != '-'
-			&& std::string("[]\\_^{}|`").find(c) == std::string::npos)
-			return (false);
-	}
-	return (true);
-}
-
-void	Server::registerNick(Client &client, const Message &message)
-{
-	std::map<int, Client>::iterator	it;
-
-	if (message.getCommand() != NICK)
-		return ;
-	if (message.getParams().empty())
-	{
-		client.setResponse(Response(client, message, ERR_NONICKNAMEGIVEN));
-		return ;
-	}
-	if (message.getParams().size() > 1 || !nickSyntax(message.getParams()[0]))
-	{
-		client.setResponse(Response(client, message, ERR_ERRONEUSNICKNAME));
-		return ;
-	}
-	for (it = _clients.begin(); it != _clients.end(); it++)
-	{
-		if (it->second.getNick() == message.getParams()[0])
-		{
-			client.setResponse(Response(client, message, ERR_NICKNAMEINUSE));
-			return ;
-		}
-	}
-	client.setNick(message.getParams()[0]);
-}
-
-void	Server::registerUser(Client &client, const Message &message)
-{
-	std::string	user;
-
-	if (message.getCommand() != USER)
-		return ;
-	if (message.getParams().size() != 4)
-	{
-		client.setResponse(Response(client, message, ERR_NEEDMOREPARAMS));
-		return ;
-	}
-	if (client.getUser() != "")
-	{
-		client.setResponse(Response(client, message, ERR_ALREADYREGISTERED));
-		return ;
-	}
-	user = message.getParams()[0] + message.getParams()[1] + message.getParams()[2] + message.getParams()[3];
-	client.setUser(user);
 }
 
 void	Server::registerClients()

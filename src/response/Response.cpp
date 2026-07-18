@@ -26,6 +26,7 @@ Response::Response(const Client &client, const Message &message, const ReplyCode
 	for (size_t i = 0; message.getParams().size(); i++)
 		_params += message.getParams()[i] + " ";
 	_command = message.getCommand();
+	_trailing = message.getTrailing();
 	if (_nick == "")
 		_nick = "*";
 	if (_user == "")
@@ -42,6 +43,7 @@ Response::Response(const Client &client, const Message &message)
 	for (size_t i = 0; message.getParams().size(); i++)
 		_params += message.getParams()[i] + " ";
 	_command = message.getCommand();
+	_trailing = message.getTrailing();
 	if (_nick == "")
 		_nick = "*";
 	if (_user == "")
@@ -63,6 +65,7 @@ Response::Response(const Response& copyResponse)
 	_response = copyResponse._response;
 	_bytes_sent = copyResponse._bytes_sent;
 	_params = copyResponse._params;
+	_trailing = copyResponse._trailing;
 }
 
 // operator overrides
@@ -81,6 +84,7 @@ Response& Response::operator=(const Response& copyResponse)
 		_response = copyResponse._response;
 		_bytes_sent = copyResponse._bytes_sent;
 		_params = copyResponse._params;
+		_trailing = copyResponse._trailing;
 	}
 	return (*this);
 }
@@ -135,11 +139,28 @@ std::string	Response::getCommandString(const commands &command)
 void	Response::buildStreamingResponse()
 {
 	std::string	response;
+	std::string prefix = ":" + _nick + "!" + _user + "@" + _host;
 
-	response = ":" + _nick + "!" + _user + "@" + _host + " " + getCommandString(_command) + " " + _destination;
-	if (_message != "")
-		response += ":" + _message + "\r\n";
-	_response = response;
+	response = prefix + " " + getCommandString(_command);
+	if (_command != NICK && _command != INVITE)
+	{	
+		for (std::vector<std::string>::const_iterator it = _params.begin(); it != _params.end(); ++it)
+			response += " " + *it;
+		if (!_trailing.empty())
+			response += " :" + _trailing;
+	}
+	else if (_command != NICK)
+	{
+		_trailing = _params[0];
+		response += " :" + _trailing;
+	}
+	else if (_command != INVITE)
+	{
+		response += " " + _params[0];
+		_trailing = _params[1];
+		response += " :" + _trailing;
+	}
+	response += "\r\n";
 }
 
 std::string	Response::header()
@@ -220,6 +241,7 @@ void	Response::buildNumericResponse()
 			response += ":Unknown reply";
 			break ;
 	}
+
 	response += "\r\n";
 	_response = response;
 }

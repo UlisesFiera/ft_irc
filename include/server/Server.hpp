@@ -53,9 +53,12 @@ class Server
 		void					executeCommands();
 		void					execute(Client &client, const Message &message, const commands &command);
 		void					registerPass(Client &client, const Message &message);
-		void					registerNick(Client &client, const Message &message);
+		bool					registerNick(Client &client, const Message &message);
 		void					registerUser(Client &client, const Message &message);
 		bool					nickSyntax(const std::string &nick);
+
+		// Commands
+		void					changeNick(Client &client, const Message &message);
 };
 
 #endif
