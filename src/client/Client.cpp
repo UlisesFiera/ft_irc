@@ -95,16 +95,16 @@ std::vector<Channel>	&Client::getChannels()
 	return (_channels_joined);
 }
 
-Channel	&Client::getChannel(const std::string &channel) const
+Channel	Client::getChannel(const std::string &channel)
 {
-	Channel	channel = Channel();
+	Channel	bad = Channel();
 
 	for (size_t i = 0; i < _channels_joined.size(); i++)
 	{
 		if (_channels_joined[i].getName() == channel)
 			return (_channels_joined[i]);
 	}
-	return (channel);
+	return (bad);
 }
 
 void Client::setLastActivity()

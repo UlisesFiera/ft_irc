@@ -66,7 +66,7 @@ class Response
 
 		const std::string			&getResponse() const;
 		const size_t				&getBytesSent() const;
-		std::vector<int>			&getTargets() const;
+		std::vector<int>			&getTargets();
 
 		void						setBytesSent(const int &bytes);
 	private:

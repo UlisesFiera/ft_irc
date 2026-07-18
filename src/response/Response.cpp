@@ -110,7 +110,7 @@ Response::~Response()
 
 //// non-canon methods
 
-std::vector<int>	&Response::getTargets() const
+std::vector<int>	&Response::getTargets()
 {
 	return (_targets);
 }

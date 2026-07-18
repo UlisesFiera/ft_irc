@@ -54,7 +54,7 @@ class Server
 		void							executeCommands();
 		void							execute(Client &client, const Message &message, const commands &command);
 		void							registerPass(Client &client, const Message &message);
-		void							registerNick(Client &client, const Message &message);
+		bool							registerNick(Client &client, const Message &message);
 		void							registerUser(Client &client, const Message &message);
 
 		// Commands
@@ -68,8 +68,8 @@ class Server
 		const std::string				&isMember(const std::string &nick);
 		int								nick2fd(const std::string &nick);
 		size_t							findcrfl(const std::string &stream);
-		void							createStreamingResponse(const Client &client, const Message &message, const std::vector<std::string> &channel);
-		void							createStreamingResponse(const Client &client, const Message &message, const int &target);
+		void							createStreamingResponse(Client &client, const Message &message, const std::vector<std::string> &channel);
+		void							createStreamingResponse(Client &client, const Message &message, const int &target);
 };
 
 #endif

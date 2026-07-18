@@ -152,7 +152,7 @@ bool Channel::checkPassword(const std::string &password) const
 
 bool Channel::isInvited(const std::string &nick) const
 {
-	for (int i = 0; i < _invitedNicks.size(); i++)
+	for (size_t i = 0; i < _invitedNicks.size(); i++)
 	{
 		if (this->getInvitedNicks()[i] == nick)
 			return 1;
