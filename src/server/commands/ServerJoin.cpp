@@ -63,5 +63,6 @@ void Server::joinChannel(Client &client, const Message &message)
 		}
 
 		_channels[channel_name].setMembers(client.getNick());
+		client.setChannel(_channels[channel_name]);
 	}
 }
