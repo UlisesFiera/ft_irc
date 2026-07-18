@@ -44,6 +44,7 @@ Client::~Client()
 {
 
 }
+
 const std::string	&Client::getHost() const
 {
 	return (_host);
@@ -89,13 +90,22 @@ time_t const	&Client::getLastActivity() const
 	return (_lastActivity);
 }
 
-std::vector<std::string>			&Client::getChannels()
+std::vector<Channel>	&Client::getChannels()
 {
 	return (_channels_joined);
 }
 
+Channel	&Client::getChannel(const std::string &channel) const
+{
+	Channel	channel = Channel();
 
-
+	for (size_t i = 0; i < _channels_joined.size(); i++)
+	{
+		if (_channels_joined[i].getName() == channel)
+			return (_channels_joined[i]);
+	}
+	return (channel);
+}
 
 void Client::setLastActivity()
 {
@@ -149,7 +159,7 @@ void	Client::setHost(const std::string &host)
 	_host = host;
 }
 
-void	Client::setChannels(const std::string &channel)
+void	Client::setChannel(const Channel &channel)
 {
 	_channels_joined.push_back(channel);
 }

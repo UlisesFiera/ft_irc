@@ -37,8 +37,6 @@ Server& Server::operator=(const Server &other)
 
 Server::~Server() {}
 
-// Functions
-
 sig_atomic_t	stop_server = 0;
 
 void	Server::signal_handler(int signum)
@@ -47,59 +45,7 @@ void	Server::signal_handler(int signum)
 		stop_server = 1;
 }
 
-int	Server::nick2fd()
-{
-
-}
-
-void	Server::execute(Client &client, const Message &message, const commands &command)
-{
-	if (command == USER || command == PASS)
-		return ;
-	if (!client.isRegistered())
-	{
-		client.setResponse(Response(client, message, ERR_NOTREGISTERED));
-		return ;
-	}
-	switch (message.getCommand())
-	{
-		case NICK:
-			changeNick(client, message);
-			break ;
-		case JOIN:
-			joinChannel(client, message);
-			break ;
-		case PRIVMSG:
-			sendPrivmsg();
-			break ;
-		case KICK:
-			break ;
-		case INVITE:
-			break ;
-		case TOPIC:
-			break ;
-		case MODE:
-			break ;
-		case INVALID:
-			client.setResponse(Response(client, message, ERR_UNKNOWNCOMMAND));
-			break ;
-		default:
-			client.setResponse(Response(client, message, ERR_UNKNOWNCOMMAND));
-			break ;
-	}
-}
-
-void	Server::executeCommands()
-{
-	std::map<int, Client>::iterator	it;
-
-	for (it = _clients.begin(); it != _clients.end(); it++)
-	{
-		for (size_t j = 0; j < it->second.getMessages().size(); j++)
-			execute(it->second, it->second.getMessages()[j], it->second.getMessages()[j].getCommand());
-		it->second.getMessages().clear();
-	}
-}
+// Functions
 
 void	Server::removeClients()
 {
@@ -158,7 +104,57 @@ void	Server::respondClients()
 	for (size_t i = 0; i < write_clients.size(); i++)
 	{
 		for (size_t j = 0; j < _clients[write_clients[i]].getResponses().size(); j++)
-			respond(_clients[write_clients[i]].getResponses()[j], write_clients[i]);
+			for (size_t z = 0; z < _clients[write_clients[i]].getResponses()[j].getTargets().size(); z++)
+				respond(_clients[write_clients[i]].getResponses()[j], _clients[write_clients[i]].getResponses()[j].getTargets()[z]);
+	}
+}
+
+void	Server::execute(Client &client, const Message &message, const commands &command)
+{
+	if (command == USER || command == PASS)
+		return ;
+	if (!client.isRegistered())
+	{
+		client.setResponse(Response(client, message, ERR_NOTREGISTERED));
+		return ;
+	}
+	switch (message.getCommand())
+	{
+		case NICK:
+			changeNick(client, message);
+			break ;
+		case JOIN:
+			joinChannel(client, message);
+			break ;
+		case PRIVMSG:
+			sendPrivmsg();
+			break ;
+		case KICK:
+			break ;
+		case INVITE:
+			break ;
+		case TOPIC:
+			break ;
+		case MODE:
+			break ;
+		case INVALID:
+			client.setResponse(Response(client, message, ERR_UNKNOWNCOMMAND));
+			break ;
+		default:
+			client.setResponse(Response(client, message, ERR_UNKNOWNCOMMAND));
+			break ;
+	}
+}
+
+void	Server::executeCommands()
+{
+	std::map<int, Client>::iterator	it;
+
+	for (it = _clients.begin(); it != _clients.end(); it++)
+	{
+		for (size_t j = 0; j < it->second.getMessages().size(); j++)
+			execute(it->second, it->second.getMessages()[j], it->second.getMessages()[j].getCommand());
+		it->second.getMessages().clear();
 	}
 }
 
@@ -207,11 +203,6 @@ std::string	Server::readStream(int client_fd)
 			return ("");
 		throw std::runtime_error("Read() failed");
 	}
-}
-
-size_t	Server::findcrfl(const std::string &stream)
-{
-	return (stream.find("\r\n"));
 }
 
 void	Server::readClients()

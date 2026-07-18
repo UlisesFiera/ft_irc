@@ -16,17 +16,9 @@ Response::Response()
 	_bytes_sent = 0;
 }
 
-Response::Response(const Client &client, const Message &message, const ReplyCode &code, const int &target)
+Response::Response(const Client &client, const Message &message, const ReplyCode &code)
 {
-	std::vector<int>	v;
-
-	v.push_back(target);
-	Response(client, message, code, v);
-}
-
-Response::Response(const Client &client, const Message &message, const ReplyCode &code, const std::vector<int> &targets)
-{
-	_targets = targets;
+	_targets.push_back(-1);
 	_bytes_sent = 0;
 	_reply_code = code;
 	_host = client.getHost();
@@ -117,6 +109,11 @@ Response::~Response()
 }
 
 //// non-canon methods
+
+std::vector<int>	&Response::getTargets() const
+{
+	return (_targets);
+}
 
 const size_t	&Response::getBytesSent() const
 {

@@ -1,4 +1,4 @@
-#include "server/EventManager.hpp"
+#include "events/EventManager.hpp"
 
 //// cannon methods
 // constructors

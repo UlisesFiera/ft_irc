@@ -8,10 +8,7 @@ void	Server::changeNick(Client &client, const Message &message)
 		return ;
 	}
 	if (message.getParams()[0] == client.getNick())
-	{
-		client.setResponse(Response(client, message));
 		return ;
-	}
 	if (registerNick(client, message))
-		client.setResponse(Response(client, message));
+		createStreamingResponse(client, message, nick2fd(client.getNick()));
 }
