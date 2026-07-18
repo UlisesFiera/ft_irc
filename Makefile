@@ -11,6 +11,7 @@ SRCS		= 	src/main.cpp\
 				src/server/Socket.cpp\
 				src/message/Message.cpp\
 				src/response/Response.cpp\
+				src/utils/printcrlf.cpp\
 
 REMOVE		= 	rm -f ${OBJS}
 

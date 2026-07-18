@@ -11,6 +11,7 @@
 # include "server/EventManager.hpp"
 # include "client/Client.hpp"
 # include "message/Message.hpp"
+# include "utils/utils.hpp"
 
 # define BUFFER_SIZE 1024
 # define NICK_SIZE 9

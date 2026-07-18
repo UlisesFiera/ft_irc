@@ -49,7 +49,7 @@ void	Server::signal_handler(int signum)
 
 void	Server::execute(Client &client, const Message &message, const commands &command)
 {
-	if (command == NICK || command == USER || command == PASS)
+	if (command == USER || command == PASS)
 		return ;
 	if (!client.isRegistered())
 	{
@@ -58,29 +58,19 @@ void	Server::execute(Client &client, const Message &message, const commands &com
 	}
 	switch (message.getCommand())
 	{
+		case NICK:
+			break ;
 		case JOIN:
-			std::cout << "Invite" << std::endl;
-			// funcion
 			break ;
 		case PRIVMSG:
-			std::cout << "Topic" << std::endl;
-			// funcion
 			break ;
 		case KICK:
-			std::cout << "Mode" << std::endl;
-			// funcion
 			break ;
 		case INVITE:
-			std::cout << "Invite" << std::endl;
-			// funcion
 			break ;
 		case TOPIC:
-			std::cout << "Topic" << std::endl;
-			// funcion
 			break ;
 		case MODE:
-			std::cout << "Mode" << std::endl;
-			// funcion
 			break ;
 		case INVALID:
 			client.setResponse(Response(client, message, ERR_UNKNOWNCOMMAND));
@@ -285,6 +275,8 @@ std::string	Server::readStream(int client_fd)
 	ssize_t		bytes_read = read(client_fd, buffer, BUFFER_SIZE);
 	std::string	stored_stream = _clients[client_fd].getStream();
 
+	std::cout << "Stream received: " << std::endl;
+	printcrlf(buffer);
 	if (bytes_read > 0)
 	{
 		stored_stream.append(buffer, bytes_read);
