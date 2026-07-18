@@ -49,7 +49,7 @@ void	Server::signal_handler(int signum)
 
 void	Server::execute(Client &client, const Message &message, const commands &command)
 {
-	if (command == NICK || command == USER || command == PASS)
+	if (command == USER || command == PASS)
 		return ;
 	if (!client.isRegistered())
 	{
@@ -58,8 +58,11 @@ void	Server::execute(Client &client, const Message &message, const commands &com
 	}
 	switch (message.getCommand())
 	{
+		case NICK:
+			std::cout << "Nick" << std::endl;
+			// funcion
 		case JOIN:
-			std::cout << "Invite" << std::endl;
+			std::cout << "Join" << std::endl;
 			// funcion
 			break ;
 		case PRIVMSG:
