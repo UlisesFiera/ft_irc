@@ -89,6 +89,14 @@ time_t const	&Client::getLastActivity() const
 	return (_lastActivity);
 }
 
+std::vector<std::string>			&Client::getChannels()
+{
+	return (_channels_joined);
+}
+
+
+
+
 void Client::setLastActivity()
 {
 	_lastActivity = time(NULL);
@@ -139,4 +147,9 @@ void	Client::setResponse(const Response &response)
 void	Client::setHost(const std::string &host)
 {
 	_host = host;
+}
+
+void	Client::setChannels(const std::string &channel)
+{
+	_channels_joined.push_back(channel);
 }

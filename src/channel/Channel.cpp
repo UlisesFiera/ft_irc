@@ -4,17 +4,10 @@ Channel::Channel () {}
 
 Channel::Channel (const std::string &name) : _inviteOnly(false), _topicRestricted(false), _userLimit(0)
 {
-	try
-	{
-		if (checkName(name) == true)
-			_name = name;
-		else
-			throw std::invalid_argument("[ERROR]: Invalid Channel name.");
-	}
-	catch(const std::exception& e)
-	{
-		std::cerr << e.what() << '\n';
-	}
+	if (checkName(name) == true)
+		_name = name;
+	else
+		throw std::invalid_argument("[ERROR]: Invalid Channel name.");
 }
 
 Channel::Channel (const Channel &other)
@@ -53,7 +46,7 @@ std::string	Channel::getName() const
 	return _name;
 }
 
-std::vector<int> Channel::getMembers() const
+std::vector<std::string> Channel::getMembers() const
 {
 	return _members;
 }
@@ -96,9 +89,9 @@ void Channel::setName(std::string name)
 	_name = name;
 }
 
-void Channel::setMembers(std::vector<int> members)
+void Channel::setMembers(std::string members)
 {
-	_members = members;
+	_members.push_back(members);
 }
 
 void Channel::setInviteOnly(bool invite)

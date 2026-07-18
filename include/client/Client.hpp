@@ -5,6 +5,7 @@
 
 # include "message/Message.hpp"
 # include "response/Response.hpp"
+# include "channel/Channel.hpp"
 
 class Response;
 
@@ -35,6 +36,8 @@ class Client
 		const std::string				&getUser() const;
 		std::vector<Response>			&getResponses();
 		const std::string				&getHost() const;
+		std::vector<std::string>		&getChannels();
+
 		// setters
 		void 							setLastActivity();
 		void							setPort(const int &port);
@@ -46,6 +49,8 @@ class Client
 		void							setUser(const std::string &user);
 		void							setResponse(const Response &response);
 		void							setHost(const std::string &host);
+		void							setChannels(const std::string &channel);
+
 	private:
 		std::string						_host;
 		int								_port;
@@ -57,6 +62,7 @@ class Client
 		std::string						_nick;
 		std::string						_user;
 		std::vector<Response>			_responses;
+		std::vector<std::string>		_channels_joined;
 };
 
 #endif

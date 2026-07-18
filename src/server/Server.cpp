@@ -62,8 +62,7 @@ void	Server::execute(Client &client, const Message &message, const commands &com
 			std::cout << "Nick" << std::endl;
 			// funcion
 		case JOIN:
-			std::cout << "Join" << std::endl;
-			// funcion
+			joinChannel(client, message);
 			break ;
 		case PRIVMSG:
 			std::cout << "Topic" << std::endl;

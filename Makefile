@@ -6,9 +6,17 @@ STD_FLAGS 	= 	-Wall -Wextra -Werror -g
 
 SRCS		= 	src/main.cpp\
 				src/client/Client.cpp\
+				src/channel/Channel.cpp\
 				src/server/EventManager.cpp\
 				src/server/Server.cpp\
 				src/server/Socket.cpp\
+				src/server/commands/ServerInvite.cpp\
+				src/server/commands/ServerJoin.cpp\
+				src/server/commands/ServerKick.cpp\
+				src/server/commands/ServerMode.cpp\
+				src/server/commands/ServerNick.cpp\
+				src/server/commands/ServerPrivmsg.cpp\
+				src/server/commands/ServerTopic.cpp\
 				src/message/Message.cpp\
 				src/response/Response.cpp\
 
