@@ -127,9 +127,10 @@ void	Server::execute(Client &client, const Message &message, const commands &com
 			joinChannel(client, message);
 			break ;
 		case PRIVMSG:
-			sendPrivmsg();
+			sendPrivmsg(client, message);
 			break ;
 		case KICK:
+			kickChannel(client, message);
 			break ;
 		case INVITE:
 			break ;

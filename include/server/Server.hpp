@@ -63,6 +63,7 @@ class Server
 		void							changeNick(Client &client, const Message &message);
 		void							sendPrivmsg(Client &client, const Message &message);
 		bool							nickSyntax(const std::string &nick);
+		void							kickChannel(Client &client, const Message &message);
 
 		// Utils
 		const std::string				&isMember(const std::string &nick);
