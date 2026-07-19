@@ -2,12 +2,15 @@
 # define CLIENT_HPP
 
 # include <iostream>
+# include <algorithm>
 
 # include "message/Message.hpp"
 # include "response/Response.hpp"
 # include "channel/Channel.hpp"
 
 class Response;
+
+class Channel;
 
 class Client 
 {
@@ -53,6 +56,9 @@ class Client
 		void							setHost(const std::string &host);
 		void							setChannel(const Channel &channel);
 		void							setFd(const int &fd);
+		
+		bool							isInChannel(const std::string &channel);
+
 	private:
 		int								_fd;
 		std::string						_host;

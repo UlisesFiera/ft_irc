@@ -173,3 +173,18 @@ void	Client::setFd(const int &fd)
 {
 	_fd = fd;
 }
+
+
+
+bool	Client::isInChannel(const std::string &channel)
+{
+	bool	in_channel = false;
+
+	for (size_t i = 0; i < this->getChannels().size(); i++)
+	{
+		if (this->getChannels()[i].getName() == channel)
+			in_channel = true;
+	}
+
+	return in_channel;
+}

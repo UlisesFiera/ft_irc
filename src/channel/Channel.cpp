@@ -19,7 +19,7 @@ Channel::Channel (const Channel &other)
 	_password = other._password;
 	_userLimit = other._userLimit;
 	_invitedNicks = other._invitedNicks;
-	_operatorFDs = other._operatorFDs;
+	_operators = other._operators;
 }
 
 Channel &Channel::operator=(const Channel &other)
@@ -33,7 +33,7 @@ Channel &Channel::operator=(const Channel &other)
 		_password = other._password;
 		_userLimit = other._userLimit;
 		_invitedNicks = other._invitedNicks;
-		_operatorFDs = other._operatorFDs;
+		_operators = other._operators;
 	}
 	return *this;
 }
@@ -46,7 +46,7 @@ std::string	Channel::getName() const
 	return _name;
 }
 
-std::vector<std::string> Channel::getMembers() const
+std::vector<Client> Channel::getMembersVec() const
 {
 	return _members;
 }
@@ -76,9 +76,9 @@ std::vector<std::string> Channel::getInvitedNicks() const
 	return _invitedNicks;
 }
 
-std::vector<int> Channel::getOperatorFDs() const
+std::vector<std::string> Channel::getOperators() const
 {
-	return _operatorFDs;
+	return _operators;
 }
 
 void Channel::setName(std::string name)
@@ -86,7 +86,7 @@ void Channel::setName(std::string name)
 	_name = name;
 }
 
-void Channel::setMembers(std::string members)
+void Channel::setMembers(Client members)
 {
 	_members.push_back(members);
 }
@@ -116,16 +116,16 @@ void Channel::setInvitedNicks(std::vector<std::string> invitedNicks)
 	_invitedNicks = invitedNicks;
 }
 
-void Channel::setOperatorFDs(std::vector<int> operatorFDs)
+void Channel::setOperators(std::vector<std::string> operators)
 {
-	_operatorFDs = operatorFDs;
+	_operators = operators;
 }
 
 bool Channel::checkName(const std::string &name) const
 {
 	if (name.empty() || name[0] != '#')
         return false;
-	for (size_t i = 0; i < name.size(); i++)
+	for (size_t i = 1; i < name.size(); i++)
 	{
 		if ((name[i] >= 'a' && name[i] <= 'z') || (name[i] >= 'A' && name[i] <= 'Z') || (name[i] >= '0' && name[i] <= '9') || name[i] == '_')
 			continue;
@@ -151,4 +151,27 @@ bool Channel::isInvited(const std::string &nick) const
 			return 1;
 	}
 	return 0;
+}
+
+bool Channel::isOperator(const std::string &client_nick)
+{
+	for (size_t i = 0; i < _operators.size(); i++)
+	{
+		if (_operators[i] == client_nick)
+			return true;
+	}
+	return false;
+}
+
+std::vector<std::string>	Channel::getNicks() const
+{
+	std::vector<std::string> clients;
+
+	for (size_t i = 0; i < this->_members.size(); i++)
+	{
+		std::string name = this->_members[i].getNick();
+		clients.push_back(name);
+	}
+
+	return clients;
 }

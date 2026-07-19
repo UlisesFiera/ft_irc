@@ -24,7 +24,7 @@ void Server::joinChannel(Client &client, const Message &message)
 			Channel new_channel(channel_name);
 
 			_channels[channel_name] = new_channel;
-			_channels[channel_name].setMembers(client.getNick());
+			_channels[channel_name].setMembers(client);
 			std::cout << "[JOIN] Canal " << channel_name << " creado por " << client.getNick() << std::endl;
 		}
         
@@ -47,7 +47,7 @@ void Server::joinChannel(Client &client, const Message &message)
 			}
 		}
 
-		if (_channels[channel_name].getUserLimit() >= _channels[channel_name].getMembers().size())
+		if (_channels[channel_name].getUserLimit() >= _channels[channel_name].getMembersVec().size())
 		{
 			client.setResponse(Response(client, message, ERR_CHANNELISFULL));
 			return;
@@ -62,7 +62,7 @@ void Server::joinChannel(Client &client, const Message &message)
 			}
 		}
 
-		_channels[channel_name].setMembers(client.getNick());
+		_channels[channel_name].setMembers(client);
 		client.setChannel(_channels[channel_name]);
 	}
 }

@@ -6,6 +6,10 @@
 #include <string>
 #include <vector>
 
+#include "client/Client.hpp"
+
+class Client;
+
 class Channel
 {
 	public:
@@ -16,36 +20,39 @@ class Channel
 		~Channel();
 
 		std::string					getName() const;
-		std::vector<std::string>	getMembers() const;
+		std::vector<Client>			getMembersVec() const;
 		bool    					getInviteOnly() const;
 		bool   						getTopicRestricted() const;
 		std::string					getPassword() const;
 		size_t						getUserLimit() const;
 		std::vector<std::string>	getInvitedNicks() const;
-		std::vector<int>			getOperatorFDs() const;
+		std::vector<std::string>	getOperators() const;
 
 		void    					setName(std::string name);
-		void    					setMembers(std::string members);
+		void    					setMembers(Client members);
 		void    					setInviteOnly(bool invite);
 		void    					setTopicRestricted(bool restricted);
 		void    					setPassword(std::string password);
 		void    					setUserLimit(size_t limit);
 		void						setInvitedNicks(std::vector<std::string> invitedNicks);
-		void						setOperatorFDs(std::vector<int> operatorFDs);
+		void						setOperators(std::vector<std::string> operators);
 
 		bool						checkName(const std::string &name) const;
 		bool    					checkPassword(const std::string &password) const;
 		bool						isInvited(const std::string &nick) const;
+		bool						isOperator(const std::string &client_nick);
+		std::vector<std::string>	getNicks() const;
+
 
 	private:
 		std::string					_name;
-		std::vector<std::string>	_members;
-		bool                		_inviteOnly;      // Modo +i
-		bool                		_topicRestricted; // Modo +t
-		std::string         		_password;        // Modo +k (vacío si no hay)
-		size_t              		_userLimit;       // Modo +l (0 significa sin límite)
-		std::vector<std::string>	_invitedNicks;    // Lista blanca para el modo +i
-		std::vector<int>    		_operatorFDs;     // Lista de administradores del canal (Modo +o)
+		std::vector<Client>			_members;
+		bool                		_inviteOnly;
+		bool                		_topicRestricted;
+		std::string         		_password;
+		size_t              		_userLimit;
+		std::vector<std::string>	_invitedNicks;
+		std::vector<std::string>	_operators;
 };
 
 #endif
