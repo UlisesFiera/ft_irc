@@ -24,7 +24,6 @@ void Server::joinChannel(Client &client, const Message &message)
 			Channel new_channel(channel_name);
 
 			_channels[channel_name] = new_channel;
-			_channels[channel_name].setMembers(client);
 			std::cout << "[JOIN] Channel " << channel_name << " created by " << client.getNick() << std::endl;
 		}
         
