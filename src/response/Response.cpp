@@ -43,7 +43,7 @@ Response::Response(const Client &client, const Message &message, const int &targ
 	_nick = client.getNick();
 	_user = client.getUser();
 	for (size_t i = 0; i < message.getParams().size(); i++)
-		_params += message.getParams()[i] + " ";
+		_params += message.getParams()[i];
 	_command = message.getCommand();
 	_trailing = message.getTrailing();
 	if (_nick == "")
@@ -61,7 +61,7 @@ Response::Response(const Client &client, const Message &message, const std::vect
 	_nick = client.getNick();
 	_user = client.getUser();
 	for (size_t i = 0; i < message.getParams().size(); i++)
-		_params += message.getParams()[i] + " ";
+		_params += message.getParams()[i];
 	_command = message.getCommand();
 	_trailing = message.getTrailing();
 	if (_nick == "")
@@ -146,20 +146,26 @@ std::string	Response::getCommandString(const commands &command)
 
 	switch (command)
 	{
+		case PRIVMSG:
+			return (cmd = "PRIVMSG");
 		case NICK:
 			return (cmd = "NICK");
 		case PASS:
 			return (cmd = "PASS");
 		case USER:
 			return (cmd = "USER");
+		case JOIN:
+			return (cmd = "JOIN");
 		case INVITE:
 			return (cmd = "INVITE");
 		case TOPIC:
 			return (cmd = "TOPIC");
 		case MODE:
 			return (cmd = "MODE");
+		case KICK:
+			return (cmd = "KICK");
 		default:
-			return (cmd = "NICK");
+			return (cmd = "UNKNOWN");
 	}
 }
 
@@ -171,7 +177,8 @@ void	Response::buildStreamingResponse(const Message &message)
 	response = prefix + " " + getCommandString(_command);
 	if (_command != NICK && _command != INVITE)
 	{	
-		response += " " + _params;
+		if (!_params.empty())
+			response += " " + _params;
 		if (!_trailing.empty())
 			response += " :" + _trailing;
 	}

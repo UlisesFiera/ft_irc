@@ -22,19 +22,25 @@ std::string	getCommandString(const commands &command)
 
 	switch (command)
 	{
+		case PRIVMSG:
+			return (cmd = "PRIVMSG");
 		case NICK:
 			return (cmd = "NICK");
 		case PASS:
 			return (cmd = "PASS");
 		case USER:
 			return (cmd = "USER");
+		case JOIN:
+			return (cmd = "JOIN");
 		case INVITE:
 			return (cmd = "INVITE");
 		case TOPIC:
 			return (cmd = "TOPIC");
 		case MODE:
 			return (cmd = "MODE");
+		case KICK:
+			return (cmd = "KICK");
 		default:
-			return (cmd = "NICK");
+			return (cmd = "UNKNOWN");
 	}
 }

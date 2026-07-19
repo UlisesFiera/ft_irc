@@ -8,7 +8,7 @@ void	Server::sendPrivmsg(Client &client, const Message &message)
 		::iterator					itc;
 	std::string						target;
 
-	if (message.getParams().size() != 2)
+	if (message.getParams().size() != 1)
 	{
 		client.setResponse(Response(client, message, ERR_NEEDMOREPARAMS));
 		return ;
