@@ -23,19 +23,19 @@ void	Server::kickChannel(Client &client, const Message &message)
 		return;
 	}
 	
-	if (client.getChannel(channel_name).isOperator(client.getNick()))
+	if (client.getChannel(channel_name)->isOperator(client.getNick()))
 	{
 		client.setResponse(Response(client, message, ERR_CHANOPRIVSNEEDED));
 		return;
 	}
 
-	if (!client.getChannel(channel_name).isOperator(target))
+	if (!client.getChannel(channel_name)->isOperator(target))
 	{
 		client.setResponse(Response(client, message, ERR_USERNOTINCHANNEL));
 		return;
 	}
 
-	createStreamingResponse(client, message, _channels[channel_name].getNicks());
-	_channels[channel_name].removeMembers(client);
-	client.setChannel(_channels[channel_name]);
+	createStreamingResponse(client, message, _channels[channel_name]->getNicks());
+	_channels[channel_name]->removeMembers(client);
+	//client.setChannel(_channels[channel_name]);
 }

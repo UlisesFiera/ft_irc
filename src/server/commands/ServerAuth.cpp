@@ -47,7 +47,7 @@ bool	Server::nickSyntax(const std::string &nick)
 
 bool	Server::registerNick(Client &client, const Message &message)
 {
-	std::map<int, Client>::iterator	it;
+	std::map<int, Client*>::iterator	it;
 
 	if (message.getCommand() != NICK)
 		return (false);
@@ -63,7 +63,7 @@ bool	Server::registerNick(Client &client, const Message &message)
 	}
 	for (it = _clients.begin(); it != _clients.end(); it++)
 	{
-		if (it->second.getNick() == message.getParams()[0])
+		if (it->second->getNick() == message.getParams()[0])
 		{
 			client.setResponse(Response(client, message, ERR_NICKNAMEINUSE));
 			return (false);

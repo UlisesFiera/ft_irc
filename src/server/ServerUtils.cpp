@@ -2,11 +2,11 @@
 
 int	Server::nick2fd(const std::string &nick)
 {
-	std::map<int, Client>::iterator	it;
+	std::map<int, Client*>::iterator	it;
 
 	for (it = _clients.begin(); it != _clients.end(); it++)
 	{
-		if (it->second.getNick() == nick)
+		if (it->second->getNick() == nick)
 			return (it->first);
 	}
 	return (-1);

@@ -59,6 +59,7 @@ void	Server::removeClients()
 	for (size_t i = 0; i < _clients2rm.size(); i++)
 	{
 		_clients.erase(_clients2rm[i]);
+		delete _clients[_clients2rm[i]];
 		_event_manager.close(_clients2rm[i]);
 		std::cout << "\033[32m✔\033[0m Client " << _clients2rm[i] << " disconnected." << std::endl;
 	}
@@ -71,13 +72,13 @@ void	Server::checkWritingDone()
 
 	for (size_t i = 0; i < write_clients.size(); i++)
 	{
-		for (size_t j = _clients[write_clients[i]].getResponses().size(); j-- > 0;)
+		for (size_t j = _clients[write_clients[i]]->getResponses().size(); j-- > 0;)
 		{
-			if (_clients[write_clients[i]].getResponses()[j].getBytesSent()
-				== _clients[write_clients[i]].getResponses()[j].getResponse().size())
-				_clients[write_clients[i]].getResponses().erase(_clients[write_clients[i]].getResponses().begin() + j);
+			if (_clients[write_clients[i]]->getResponses()[j].getBytesSent()
+				== _clients[write_clients[i]]->getResponses()[j].getResponse().size())
+				_clients[write_clients[i]]->getResponses().erase(_clients[write_clients[i]]->getResponses().begin() + j);
 		}
-		if (_clients[write_clients[i]].getResponses().empty())
+		if (_clients[write_clients[i]]->getResponses().empty())
 			_event_manager.clear(write_clients[i], POLLOUT);
 	}
 }
@@ -104,9 +105,9 @@ void	Server::respondClients()
 
 	for (size_t i = 0; i < write_clients.size(); i++)
 	{
-		for (size_t j = 0; j < _clients[write_clients[i]].getResponses().size(); j++)
-			for (size_t z = 0; z < _clients[write_clients[i]].getResponses()[j].getTargets().size(); z++)
-				respond(_clients[write_clients[i]].getResponses()[j], _clients[write_clients[i]].getResponses()[j].getTargets()[z]);
+		for (size_t j = 0; j < _clients[write_clients[i]]->getResponses().size(); j++)
+			for (size_t z = 0; z < _clients[write_clients[i]]->getResponses()[j].getTargets().size(); z++)
+				respond(_clients[write_clients[i]]->getResponses()[j], _clients[write_clients[i]]->getResponses()[j].getTargets()[z]);
 	}
 }
 
@@ -153,13 +154,13 @@ void	Server::execute(Client &client, const Message &message, const commands &com
 
 void	Server::executeCommands()
 {
-	std::map<int, Client>::iterator	it;
+	std::map<int, Client*>::iterator	it;
 
 	for (it = _clients.begin(); it != _clients.end(); it++)
 	{
-		for (size_t j = 0; j < it->second.getMessages().size(); j++)
-			execute(it->second, it->second.getMessages()[j], it->second.getMessages()[j].getCommand());
-		it->second.getMessages().clear();
+		for (size_t j = 0; j < it->second->getMessages().size(); j++)
+			execute(*it->second, it->second->getMessages()[j], it->second->getMessages()[j].getCommand());
+		it->second->getMessages().clear();
 	}
 }
 
@@ -169,17 +170,17 @@ void	Server::registerClients()
 
 	for (size_t i = 0; i < read_clients.size(); i++)
 	{
-		if (!_clients[read_clients[i]].isRegistered())
+		if (!_clients[read_clients[i]]->isRegistered())
 		{
-			for (size_t j = 0; j < _clients[read_clients[i]].getMessages().size(); j++)
+			for (size_t j = 0; j < _clients[read_clients[i]]->getMessages().size(); j++)
 			{
-				registerPass(_clients[read_clients[i]], _clients[read_clients[i]].getMessages()[j]);
-				registerNick(_clients[read_clients[i]], _clients[read_clients[i]].getMessages()[j]);
-				registerUser(_clients[read_clients[i]], _clients[read_clients[i]].getMessages()[j]);
-				if (_clients[read_clients[i]].getPass() != "" && _clients[read_clients[i]].getUser() != "" && _clients[read_clients[i]].getNick() != "")
+				registerPass(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j]);
+				registerNick(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j]);
+				registerUser(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j]);
+				if (_clients[read_clients[i]]->getPass() != "" && _clients[read_clients[i]]->getUser() != "" && _clients[read_clients[i]]->getNick() != "")
 				{
-					_clients[read_clients[i]].setRegistered(true);
-					_clients[read_clients[i]].setResponse(Response(_clients[read_clients[i]], _clients[read_clients[i]].getMessages()[j], RPL_WELCOME));
+					_clients[read_clients[i]]->setRegistered(true);
+					_clients[read_clients[i]]->setResponse(Response(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j], RPL_WELCOME));
 				}
 			}
 		}
@@ -190,14 +191,14 @@ std::string	Server::readStream(int client_fd)
 {
 	char		buffer[BUFFER_SIZE];
 	ssize_t		bytes_read = read(client_fd, buffer, BUFFER_SIZE);
-	std::string	stored_stream = _clients[client_fd].getStream();
+	std::string	stored_stream = _clients[client_fd]->getStream();
 
 	std::cout << "Stream received from client " << client_fd << ": " << std::endl;
 	printcrlf(buffer, bytes_read);
 	if (bytes_read > 0)
 	{
 		stored_stream.append(buffer, bytes_read);
-		_clients[client_fd].setLastActivity(); 
+		_clients[client_fd]->setLastActivity(); 
 		return (stored_stream);
 	}
 	else if (bytes_read == 0)
@@ -245,11 +246,11 @@ void	Server::readClients()
 			while (pos != std::string::npos)
 			{
 				_event_manager.update(read_clients[i], POLLOUT);
-				_clients[read_clients[i]].setMessage(stream.substr(0, pos));
+				_clients[read_clients[i]]->setMessage(stream.substr(0, pos));
 				stream.erase(0, pos + 2);
 				pos = findcrfl(stream);
 			}
-			_clients[read_clients[i]].setStream(stream);
+			_clients[read_clients[i]]->setStream(stream);
 		}
 	}
 }
@@ -274,10 +275,11 @@ void	Server::acceptClients()
 		std::cout << "\033[32m✔\033[0m New client over IP: " << inet_ntoa(addr.sin_addr) 
 					<< " port: " << ntohs(addr.sin_port) 
 					<< " fd: " << clientfd << std::endl;
+		_clients[clientfd] = new Client();
 		_event_manager.addClient(clientfd);
-		_clients[clientfd].setPort(_listening_socket.getPort());
-		_clients[clientfd].setHost(_host);
-		_clients[clientfd].setFd(clientfd);
+		_clients[clientfd]->setPort(_listening_socket.getPort());
+		_clients[clientfd]->setHost(_host);
+		_clients[clientfd]->setFd(clientfd);
 	}
 }
 

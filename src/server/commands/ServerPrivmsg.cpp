@@ -2,7 +2,7 @@
 
 void	Server::sendPrivmsg(Client &client, const Message &message)
 {
-	std::map<int, Client>
+	std::map<int, Client*>
 		::iterator					it;
 	std::map<std::string, Channel>
 		::iterator					itc;
@@ -19,9 +19,9 @@ void	Server::sendPrivmsg(Client &client, const Message &message)
 		target.substr(1);
 		for (size_t i = 0; client.getChannels().size(); i++)
 		{
-			if (target == client.getChannels()[i].getName())
+			if (target == client.getChannels()[i]->getName())
 			{
-				createStreamingResponse(client, message, client.getChannels()[i].getNicks());
+				createStreamingResponse(client, message, client.getChannels()[i]->getNicks());
 				createStreamingResponse(client, message, client.getFd());
 				return ;
 			}
@@ -32,7 +32,7 @@ void	Server::sendPrivmsg(Client &client, const Message &message)
 	{
 		for (it = _clients.begin(); it != _clients.end(); it++)
 		{
-			if (it->second.getNick() == target)
+			if (it->second->getNick() == target)
 			{
 				createStreamingResponse(client, message, nick2fd(target));
 				return ;
