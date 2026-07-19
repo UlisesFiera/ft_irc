@@ -115,6 +115,8 @@ void	Server::execute(Client &client, const Message &message, const commands &com
 	std::cout << "Executing command " << getCommandString(command) << " for client " << client.getFd() << std::endl;
 	if (command == USER || command == PASS)
 		return ;
+	if (command == NICK && !client.isRegistered())
+		return ;
 	if (!client.isRegistered())
 	{
 		client.setResponse(Response(client, message, ERR_NOTREGISTERED));
