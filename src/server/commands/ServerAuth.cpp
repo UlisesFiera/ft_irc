@@ -79,7 +79,7 @@ void	Server::registerUser(Client &client, const Message &message)
 
 	if (message.getCommand() != USER)
 		return ;
-	if (message.getParams().size() != 4)
+	if (message.getParams().size() != 3)
 	{
 		client.setResponse(Response(client, message, ERR_NEEDMOREPARAMS));
 		return ;

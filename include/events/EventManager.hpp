@@ -60,4 +60,6 @@ class EventManager
 		void					addEvent(const int fd, const short event);
 };
 
+const std::string	event2str(short event);
+
 #endif

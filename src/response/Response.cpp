@@ -24,7 +24,7 @@ Response::Response(const Client &client, const Message &message, const ReplyCode
 	_host = client.getHost();
 	_nick = client.getNick();
 	_user = client.getUser();
-	for (size_t i = 0; message.getParams().size(); i++)
+	for (size_t i = 0; i < message.getParams().size(); i++)
 		_params += message.getParams()[i] + " ";
 	_command = message.getCommand();
 	_trailing = message.getTrailing();
@@ -37,10 +37,20 @@ Response::Response(const Client &client, const Message &message, const ReplyCode
 
 Response::Response(const Client &client, const Message &message, const int &target)
 {
-	std::vector<int>	v;
-
-	v.push_back(target);
-	Response(client, message, v);
+	_targets.push_back(target);
+	_bytes_sent = 0;
+	_host = client.getHost();
+	_nick = client.getNick();
+	_user = client.getUser();
+	for (size_t i = 0; i < message.getParams().size(); i++)
+		_params += message.getParams()[i] + " ";
+	_command = message.getCommand();
+	_trailing = message.getTrailing();
+	if (_nick == "")
+		_nick = "*";
+	if (_user == "")
+		_user = "*";
+	buildStreamingResponse(message);
 }
 
 Response::Response(const Client &client, const Message &message, const std::vector<int> &targets)
@@ -50,7 +60,7 @@ Response::Response(const Client &client, const Message &message, const std::vect
 	_host = client.getHost();
 	_nick = client.getNick();
 	_user = client.getUser();
-	for (size_t i = 0; message.getParams().size(); i++)
+	for (size_t i = 0; i < message.getParams().size(); i++)
 		_params += message.getParams()[i] + " ";
 	_command = message.getCommand();
 	_trailing = message.getTrailing();
@@ -172,11 +182,11 @@ void	Response::buildStreamingResponse(const Message &message)
 	}
 	else if (_command != INVITE)
 	{
-		response += " " + message.getParams()[0];
-		_trailing = message.getParams()[1];
+		_trailing = message.getParams()[0];
 		response += " :" + _trailing;
 	}
 	response += "\r\n";
+	_response = response;
 }
 
 std::string	Response::header()

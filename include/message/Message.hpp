@@ -36,7 +36,6 @@ class Message
 		
 	private:
 		void						parseMessage();
-		void						findTrailing();
 		commands 					resolveCommand();
 
 		std::string					_stream;

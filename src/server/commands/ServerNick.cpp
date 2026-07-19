@@ -10,5 +10,8 @@ void	Server::changeNick(Client &client, const Message &message)
 	if (message.getParams()[0] == client.getNick())
 		return ;
 	if (registerNick(client, message))
-		createStreamingResponse(client, message, nick2fd(client.getNick()));
+	{
+		std::cout << "Nick changed successfully" << std::endl;
+		createStreamingResponse(client, message, client.getFd());
+	}
 }

@@ -75,42 +75,44 @@ commands Message::resolveCommand()
 		return INVALID;
 }
 
-void	Message::findTrailing()
-{
-	size_t	trailing_pos = _stream.find(" :");
-
-	if (trailing_pos != std::string::npos)
-	{
-		_trailing = _stream.substr(trailing_pos + 2);
-		_stream = _stream.substr(0, trailing_pos); 
-	}
-}
-
 void	Message::parseMessage()
 {
-	size_t	end = _stream.find(' ');
+	size_t	next = _stream.find(' ');
 	size_t	start = 0;
 
-	if (end != std::string::npos)
-	{
-		_command = _stream.substr(start, end - start);
-		start = end + 1;
-		while ((end = _stream.find(' ', start)) != std::string::npos)
-		{
-			if (end != start)
-				_params.push_back(_stream.substr(start, end - start));
-			start = end + 1;
-		}
-		if (start < _stream.size())
-			_params.push_back(_stream.substr(start));
-	}
+	if (_stream.empty())
+		return ;
+	if (next != std::string::npos)
+		_command = _stream.substr(start, next - start);
 	else
+	{
 		_command = _stream;
+		return ;
+	}
+	start = next + 1;
+	while (start < _stream.size())
+	{
+		next = _stream.find(' ', start);
+		if (next == std::string::npos)
+		{
+			if (_stream[start] == ':')
+				_trailing = _stream.substr(start + 1);
+			else
+				_params.push_back(_stream.substr(start));
+			return ;
+		}
+		if (_stream[start] == ':')
+		{
+			_trailing = _stream.substr(start+ 1);
+			return ;
+		}
+		_params.push_back(_stream.substr(start, next - start));
+		start = next + 1;
+	}
 }
 
 void	Message::parse()
 {
 	parseMessage();
-	findTrailing();
 	_cmd = resolveCommand();
 }

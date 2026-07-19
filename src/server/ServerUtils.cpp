@@ -21,6 +21,8 @@ void	Server::createStreamingResponse(Client &client, const Message &message, con
 {
 	for (size_t i = 0; i < channel.size(); i++)
 	{	
+		if (nick2fd(channel[i]) == client.getFd())
+			continue ;
 		_event_manager.update(nick2fd(channel[i]), POLLOUT);
 		client.setResponse(Response(client, message, nick2fd(channel[i])));
 	}
@@ -28,6 +30,7 @@ void	Server::createStreamingResponse(Client &client, const Message &message, con
 
 void	Server::createStreamingResponse(Client &client, const Message &message, const int &target)
 {
-	_event_manager.update(target, POLLOUT);
+	if (target != client.getFd())
+		_event_manager.update(target, POLLOUT);
 	client.setResponse(Response(client, message, target));
 }

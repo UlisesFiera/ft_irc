@@ -95,6 +95,7 @@ void	Server::respond(Response &response, int client_fd)
 		return ;
 	}
 	response.setBytesSent(response.getBytesSent() + sent);
+	std::cout << "Response stream sent to client " << client_fd << " :" <<  remainder << std::endl;
 }
 
 void	Server::respondClients()
