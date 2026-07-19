@@ -35,5 +35,7 @@ void	Server::kickChannel(Client &client, const Message &message)
 		return;
 	}
 
-
+	createStreamingResponse(client, message, _channels[channel_name].getNicks());
+	_channels[channel_name].removeMembers(client);
+	client.setChannel(_channels[channel_name]);
 }

@@ -24,7 +24,6 @@ void Server::joinChannel(Client &client, const Message &message)
 			Channel new_channel(channel_name);
 
 			_channels[channel_name] = new_channel;
-			_channels[channel_name].setMembers(client);
 			std::cout << "[JOIN] Channel " << channel_name << " created by " << client.getNick() << std::endl;
 		}
         
@@ -65,7 +64,7 @@ void Server::joinChannel(Client &client, const Message &message)
 		if (client.isInChannel(channel_name))
 			return;
 	}
-	_channels[channel_name].setMembers(client);
+	_channels[channel_name].setMembers(&client);
 	client.setChannel(_channels[channel_name]);
 	createStreamingResponse(client, message, _channels[channel_name].getNicks());
 	createStreamingResponse(client, message, client.getFd());
