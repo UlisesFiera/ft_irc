@@ -95,21 +95,19 @@ time_t const	&Client::getLastActivity() const
 	return (_lastActivity);
 }
 
-std::vector<Channel>	&Client::getChannels()
+std::vector<Channel*>	&Client::getChannels()
 {
 	return (_channels_joined);
 }
 
-Channel	Client::getChannel(const std::string &channel)
+Channel*	Client::getChannel(const std::string &channel)
 {
-	Channel	bad = Channel();
-
 	for (size_t i = 0; i < _channels_joined.size(); i++)
 	{
-		if (_channels_joined[i].getName() == channel)
+		if (_channels_joined[i]->getName() == channel)
 			return (_channels_joined[i]);
 	}
-	return (bad);
+	return (NULL);
 }
 
 void Client::setLastActivity()
@@ -164,7 +162,7 @@ void	Client::setHost(const std::string &host)
 	_host = host;
 }
 
-void	Client::setChannel(const Channel &channel)
+void	Client::setChannel(Channel *channel)
 {
 	_channels_joined.push_back(channel);
 }
@@ -182,9 +180,23 @@ bool	Client::isInChannel(const std::string &channel)
 
 	for (size_t i = 0; i < this->getChannels().size(); i++)
 	{
-		if (this->getChannels()[i].getName() == channel)
+		if (this->getChannels()[i]->getName() == channel)
 			in_channel = true;
 	}
 
 	return in_channel;
+}
+
+void	Client::removeChannel(const Channel &channel)
+{
+	std::vector<Channel*>::iterator it;
+
+    for (it = _channels_joined.begin(); it != _channels_joined.end(); ++it)
+    {
+		if ((*it)->getName() == channel.getName())
+        {
+            _channels_joined.erase(it);
+            break;
+        }
+    }
 }

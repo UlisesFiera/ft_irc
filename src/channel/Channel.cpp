@@ -46,7 +46,7 @@ std::string	Channel::getName() const
 	return _name;
 }
 
-std::vector<Client> Channel::getMembersVec() const
+std::vector<Client*> Channel::getMembersVec() const
 {
 	return _members;
 }
@@ -86,7 +86,7 @@ void Channel::setName(std::string name)
 	_name = name;
 }
 
-void Channel::setMembers(Client members)
+void Channel::setMembers(Client *members)
 {
 	_members.push_back(members);
 }
@@ -163,15 +163,29 @@ bool Channel::isOperator(const std::string &client_nick)
 	return false;
 }
 
-std::vector<std::string>	Channel::getNicks() const
+std::vector<std::string>	Channel::getNicks()
 {
 	std::vector<std::string> clients;
 
 	for (size_t i = 0; i < this->_members.size(); i++)
 	{
-		std::string name = this->_members[i].getNick();
+		std::string name = this->_members[i]->getNick();
 		clients.push_back(name);
 	}
 
 	return clients;
+}
+
+void Channel::removeMembers(const Client &client)
+{
+    std::vector<Client*>::iterator it;
+
+    for (it = _members.begin(); it != _members.end(); ++it)
+    {
+		if ((*it)->getNick() == client.getNick())
+        {
+            _members.erase(it);
+            break;
+        }
+    }
 }

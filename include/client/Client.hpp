@@ -39,8 +39,8 @@ class Client
 		const std::string				&getUser() const;
 		std::vector<Response>			&getResponses();
 		const std::string				&getHost() const;
-		std::vector<Channel>			&getChannels();
-		Channel							getChannel(const std::string &channel);
+		std::vector<Channel*>			&getChannels();
+		Channel							*getChannel(const std::string &channel);
 		const int						&getFd() const;
 
 		// setters
@@ -54,10 +54,11 @@ class Client
 		void							setUser(const std::string &user);
 		void							setResponse(const Response &response);
 		void							setHost(const std::string &host);
-		void							setChannel(const Channel &channel);
+		void							setChannel(Channel *channel);
 		void							setFd(const int &fd);
 		
 		bool							isInChannel(const std::string &channel);
+		void							removeChannel(const Channel &channel);
 
 	private:
 		int								_fd;
@@ -71,7 +72,7 @@ class Client
 		std::string						_nick;
 		std::string						_user;
 		std::vector<Response>			_responses;
-		std::vector<Channel>			_channels_joined;
+		std::vector<Channel*>			_channels_joined;
 };
 
 #endif

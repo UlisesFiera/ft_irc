@@ -20,7 +20,7 @@ class Channel
 		~Channel();
 
 		std::string					getName() const;
-		std::vector<Client>			getMembersVec() const;
+		std::vector<Client*>		getMembersVec() const;
 		bool    					getInviteOnly() const;
 		bool   						getTopicRestricted() const;
 		std::string					getPassword() const;
@@ -29,7 +29,7 @@ class Channel
 		std::vector<std::string>	getOperators() const;
 
 		void    					setName(std::string name);
-		void    					setMembers(Client members);
+		void    					setMembers(Client *members);
 		void    					setInviteOnly(bool invite);
 		void    					setTopicRestricted(bool restricted);
 		void    					setPassword(std::string password);
@@ -41,12 +41,12 @@ class Channel
 		bool    					checkPassword(const std::string &password) const;
 		bool						isInvited(const std::string &nick) const;
 		bool						isOperator(const std::string &client_nick);
-		std::vector<std::string>	getNicks() const;
-
+		std::vector<std::string>	getNicks();
+		void						removeMembers(const Client &client_nick);
 
 	private:
 		std::string					_name;
-		std::vector<Client>			_members;
+		std::vector<Client*>		_members;
 		bool                		_inviteOnly;
 		bool                		_topicRestricted;
 		std::string         		_password;

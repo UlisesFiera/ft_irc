@@ -21,7 +21,7 @@ void Server::joinChannel(Client &client, const Message &message)
 	{
 		try
 		{
-			Channel new_channel(channel_name);
+			Channel *new_channel = new Channel(channel_name);
 
 			_channels[channel_name] = new_channel;
 			std::cout << "[JOIN] Channel " << channel_name << " created by " << client.getNick() << std::endl;
@@ -36,24 +36,24 @@ void Server::joinChannel(Client &client, const Message &message)
 	else
 	{
 		std::cout << "[JOIN] Client " << client.getNick() << " joined channel " << channel_name << std::endl;
-		if (_channels[channel_name].getPassword() != "")
+		if (_channels[channel_name]->getPassword() != "")
 		{
-			if (message.getParams()[1] == "" || _channels[channel_name].checkPassword(message.getParams()[1]))
+			if (message.getParams()[1] == "" || _channels[channel_name]->checkPassword(message.getParams()[1]))
 			{
 				client.setResponse(Response(client, message, ERR_BADCHANNELKEY));
 				return;
 			}
 		}
 
-		if (_channels[channel_name].getUserLimit() >= _channels[channel_name].getMembersVec().size())
+		if (_channels[channel_name]->getUserLimit() >= _channels[channel_name]->getMembersVec().size())
 		{
 			client.setResponse(Response(client, message, ERR_CHANNELISFULL));
 			return;
 		}
 
-		if (_channels[channel_name].getInviteOnly() == true)
+		if (_channels[channel_name]->getInviteOnly() == true)
 		{
-			if (!(_channels[channel_name].isInvited(client.getNick())))
+			if (!(_channels[channel_name]->isInvited(client.getNick())))
 			{
 				client.setResponse(Response(client, message, ERR_INVITEONLYCHAN));
 				return;
@@ -63,8 +63,8 @@ void Server::joinChannel(Client &client, const Message &message)
 		if (client.isInChannel(channel_name))
 			return;
 	}
-	_channels[channel_name].setMembers(client);
+	_channels[channel_name]->setMembers(&client);
 	client.setChannel(_channels[channel_name]);
-	createStreamingResponse(client, message, _channels[channel_name].getNicks());
+	createStreamingResponse(client, message, _channels[channel_name]->getNicks());
 	createStreamingResponse(client, message, client.getFd());
 }

@@ -36,9 +36,9 @@ class Server
 		std::string						_password;
 		Socket							_listening_socket;
 		EventManager					_event_manager;
-		std::map<int, Client>			_clients;
+		std::map<int, Client*>			_clients;
 		std::vector<int>				_clients2rm;
-		std::map<std::string, Channel>	_channels;
+		std::map<std::string, Channel*>	_channels;
 
 		// Functions
 		void							initListeningSocket();

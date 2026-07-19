@@ -15,7 +15,7 @@ void	Server::changeNick(Client &client, const Message &message)
 	{
 		std::cout << "Nick changed successfully from " << prev_nick << " to " << client.getNick() << std::endl;
 		for (size_t i = 0; i < client.getChannels().size(); i++)
-			createStreamingResponse(client, message, client.getChannels()[i].getNicks());
+			createStreamingResponse(client, message, client.getChannels()[i]->getNicks());
 		createStreamingResponse(client, message, client.getFd());
 	}
 }
