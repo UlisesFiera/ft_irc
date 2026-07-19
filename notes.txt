@@ -1,3 +1,14 @@
 - The maximum length of a message is 512 characters, 
 including the trailing CR-LF.
 
+USER joe 0 * :Joe Doe
+PASS 1234abcd_
+NICK joe
+JOIN #gen
+
+USER clara 0 * :Clarita
+PASS 1234abcd_
+NICK clara
+JOIN #gen
+
+PRIVMSG #gen :hi all

@@ -33,7 +33,6 @@ void Server::joinChannel(Client &client, const Message &message)
             return;
         }
     }
-	
 	else
 	{
 		std::cout << "[JOIN] Client " << client.getNick() << " joined channel " << channel_name << std::endl;
