@@ -45,6 +45,11 @@ Client::~Client()
 
 }
 
+const int	&Client::getFd() const
+{
+	return (_fd);
+}
+
 const std::string	&Client::getHost() const
 {
 	return (_host);
@@ -162,4 +167,9 @@ void	Client::setHost(const std::string &host)
 void	Client::setChannel(const Channel &channel)
 {
 	_channels_joined.push_back(channel);
+}
+
+void	Client::setFd(const int &fd)
+{
+	_fd = fd;
 }

@@ -21,7 +21,7 @@ SRCS		= 	src/main.cpp\
 				src/server/ServerUtils.cpp\
 				src/message/Message.cpp\
 				src/response/Response.cpp\
-				src/utils/printcrlf.cpp\
+				src/utils/utils.cpp\
 
 REMOVE		= 	rm -f ${OBJS}
 
@@ -59,7 +59,7 @@ fclean: clean
 	@rm -f ${NAME}
 	@rm -rf ${OBJDIR}
 	@printf "\r\033[32m[OK]\033[0m removed executables                \n"
-	@rm -f ircserv.dSYM
+	@rm -rf ircserv.dSYM
 				
 re:	fclean all
 

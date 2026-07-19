@@ -38,6 +38,7 @@ class Client
 		const std::string				&getHost() const;
 		std::vector<Channel>			&getChannels();
 		Channel							getChannel(const std::string &channel);
+		const int						&getFd() const;
 
 		// setters
 		void 							setLastActivity();
@@ -51,8 +52,9 @@ class Client
 		void							setResponse(const Response &response);
 		void							setHost(const std::string &host);
 		void							setChannel(const Channel &channel);
-
+		void							setFd(const int &fd);
 	private:
+		int								_fd;
 		std::string						_host;
 		int								_port;
 		time_t 							_lastActivity;

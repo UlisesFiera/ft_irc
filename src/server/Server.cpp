@@ -91,7 +91,7 @@ void	Server::respond(Response &response, int client_fd)
 
 	if (sent < 0)
 	{
-		std::cerr << "Error writing to client\n";
+		std::cerr << "Error writing to client " << client_fd << std::endl;
 		return ;
 	}
 	response.setBytesSent(response.getBytesSent() + sent);
@@ -111,6 +111,7 @@ void	Server::respondClients()
 
 void	Server::execute(Client &client, const Message &message, const commands &command)
 {
+	std::cout << "Executing command " << getCommandString(command) << " for client " << client.getFd() << std::endl;
 	if (command == USER || command == PASS)
 		return ;
 	if (!client.isRegistered())
@@ -188,8 +189,8 @@ std::string	Server::readStream(int client_fd)
 	ssize_t		bytes_read = read(client_fd, buffer, BUFFER_SIZE);
 	std::string	stored_stream = _clients[client_fd].getStream();
 
-	std::cout << "Stream received: " << std::endl;
-	printcrlf(buffer);
+	std::cout << "Stream received from client " << client_fd << ": " << std::endl;
+	printcrlf(buffer, bytes_read);
 	if (bytes_read > 0)
 	{
 		stored_stream.append(buffer, bytes_read);
@@ -273,6 +274,7 @@ void	Server::acceptClients()
 		_event_manager.addClient(clientfd);
 		_clients[clientfd].setPort(_listening_socket.getPort());
 		_clients[clientfd].setHost(_host);
+		_clients[clientfd].setFd(clientfd);
 	}
 }
 

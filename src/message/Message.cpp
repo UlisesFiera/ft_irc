@@ -11,6 +11,7 @@ Message::Message(std::string stream)
 	_trailing = "";
 	_stream = stream;
 	_cmd = NONE;
+	parse();
 }
 
 Message::Message(const Message &copyMessage)

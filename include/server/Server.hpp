@@ -66,7 +66,6 @@ class Server
 		void							kickChannel(Client &client, const Message &message);
 
 		// Utils
-		const std::string				&isMember(const std::string &nick);
 		int								nick2fd(const std::string &nick);
 		size_t							findcrfl(const std::string &stream);
 		void							createStreamingResponse(Client &client, const Message &message, const std::vector<std::string> &channel);

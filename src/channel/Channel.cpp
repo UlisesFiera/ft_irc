@@ -81,9 +81,6 @@ std::vector<int> Channel::getOperatorFDs() const
 	return _operatorFDs;
 }
 
-
-
-
 void Channel::setName(std::string name)
 {
 	_name = name;
@@ -124,14 +121,10 @@ void Channel::setOperatorFDs(std::vector<int> operatorFDs)
 	_operatorFDs = operatorFDs;
 }
 
-
-
-
 bool Channel::checkName(const std::string &name) const
 {
 	if (name.empty() || name[0] != '#')
         return false;
-
 	for (size_t i = 0; i < name.size(); i++)
 	{
 		if ((name[i] >= 'a' && name[i] <= 'z') || (name[i] >= 'A' && name[i] <= 'Z') || (name[i] >= '0' && name[i] <= '9') || name[i] == '_')
@@ -157,6 +150,5 @@ bool Channel::isInvited(const std::string &nick) const
 		if (this->getInvitedNicks()[i] == nick)
 			return 1;
 	}
-	
 	return 0;
 }

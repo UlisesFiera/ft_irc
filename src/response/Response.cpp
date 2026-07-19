@@ -18,7 +18,7 @@ Response::Response()
 
 Response::Response(const Client &client, const Message &message, const ReplyCode &code)
 {
-	_targets.push_back(-1);
+	_targets.push_back(client.getFd());
 	_bytes_sent = 0;
 	_reply_code = code;
 	_host = client.getHost();
