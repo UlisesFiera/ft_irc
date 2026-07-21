@@ -1,4 +1,5 @@
 .DS_Store
 .vscode/
 test.py
-ircserv.dSYM
+ircserv.dSYM/
+objs/

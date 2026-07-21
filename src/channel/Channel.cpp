@@ -41,47 +41,55 @@ Channel &Channel::operator=(const Channel &other)
 Channel::~Channel() {}
 
 
-std::string	Channel::getName() const
+const std::string	&Channel::getName() const
 {
 	return _name;
 }
 
-std::vector<Client*> Channel::getMembersVec() const
+const std::vector<Client*> &Channel::getMembersVec() const
 {
 	return _members;
 }
 
-bool Channel::getInviteOnly() const
+const bool &Channel::getInviteOnly() const
 {
 	return _inviteOnly;
 }
 
-bool Channel::getTopicRestricted() const
+const bool &Channel::getTopicRestricted() const
 {
 	return _topicRestricted;
 }
 
-std::string Channel::getPassword() const
+const std::string &Channel::getPassword() const
 {
 	return _password;
 }
 
-size_t Channel::getUserLimit() const
+const size_t &Channel::getUserLimit() const
 {
 	return _userLimit;
 }
 
-std::vector<std::string> Channel::getInvitedNicks() const
+const std::vector<std::string> &Channel::getInvitedNicks() const
 {
 	return _invitedNicks;
 }
 
-std::vector<std::string> Channel::getOperators() const
+const std::vector<std::string> &Channel::getOperators() const
 {
 	return _operators;
 }
 
-void Channel::setName(std::string name)
+const std::string	&Channel::getTopic() const
+{
+	return _topic;
+}
+
+
+
+
+void Channel::setName(const std::string &name)
 {
 	_name = name;
 }
@@ -101,7 +109,7 @@ void Channel::setTopicRestricted(bool restricted)
 	_topicRestricted = restricted;
 }
 
-void Channel::setPassword(std::string password)
+void Channel::setPassword(const std::string &password)
 {
 	_password = password;
 }
@@ -111,15 +119,28 @@ void Channel::setUserLimit(size_t limit)
 	_userLimit = limit;
 }
 
-void Channel::setInvitedNicks(std::vector<std::string> invitedNicks)
+void Channel::setInvitedNicks(const std::string &invitedNicks)
 {
-	_invitedNicks = invitedNicks;
+	_invitedNicks.push_back(invitedNicks);
 }
 
-void Channel::setOperators(std::vector<std::string> operators)
+void Channel::setOperators(const std::vector<std::string> &operators)
 {
 	_operators = operators;
 }
+
+void Channel::setOperator(const std::string &new_operator)
+{
+	_operators.push_back(new_operator);
+}
+
+void Channel::setTopic(const std::string &topic)
+{
+	_topic = topic;
+}
+
+
+
 
 bool Channel::checkName(const std::string &name) const
 {
@@ -151,6 +172,20 @@ bool Channel::isInvited(const std::string &nick) const
 			return 1;
 	}
 	return 0;
+}
+
+void Channel::removeInvitation(const std::string &nick)
+{
+    std::vector<std::string>::iterator it;
+
+    for (it = _invitedNicks.begin(); it != _invitedNicks.end(); ++it)
+    {
+        if (*it == nick)
+        {
+            _invitedNicks.erase(it);
+            break;
+        }
+    }
 }
 
 bool Channel::isOperator(const std::string &client_nick)
@@ -188,4 +223,28 @@ void Channel::removeMembers(const Client &client)
             break;
         }
     }
+}
+
+bool Channel::isInChannel(const std::string &client_nick)
+{
+	for (size_t i = 0; i < _members.size(); i++)
+	{
+		if (_members[i]->getNick() == client_nick)
+			return true;
+	}
+	return false;
+}
+
+void Channel::removeOperator(const std::string &target_operator)
+{
+	std::vector<std::string>::iterator it;
+
+	for (it = _operators.begin(); it != _operators.end(); it++)
+	{
+		if (*it == target_operator)
+		{
+			_operators.erase(it);
+			break;
+		}
+	}
 }

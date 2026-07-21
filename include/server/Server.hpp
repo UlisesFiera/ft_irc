@@ -64,6 +64,13 @@ class Server
 		void							sendPrivmsg(Client &client, const Message &message);
 		bool							nickSyntax(const std::string &nick);
 		void							kickChannel(Client &client, const Message &message);
+		void							channelTopic(Client &client, const Message &message);
+		void							channelInvite(Client &client, const Message &message);
+		void							channelMode(Client &client, const Message &message);
+		void							modeParseFlags(Channel &channel, std::vector<std::string> &params);
+		void							modeParseArgs(Channel &channel, std::vector<std::string> &params);
+		bool							modeChecker(std::vector<std::string> &params);
+		void							executeMode(std::vector<std::string> &params, Client &client, const Message &message);
 
 		// Utils
 		int								nick2fd(const std::string &nick);
