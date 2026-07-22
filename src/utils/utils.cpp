@@ -40,6 +40,8 @@ std::string	getCommandString(const commands &command)
 			return (cmd = "MODE");
 		case KICK:
 			return (cmd = "KICK");
+		case PART:
+			return (cmd = "PART");
 		default:
 			return (cmd = "UNKNOWN");
 	}

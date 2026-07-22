@@ -47,6 +47,36 @@ void	Server::signal_handler(int signum)
 
 // Functions
 
+void	Server::removeFromChannels(Client &client)
+{
+	std::map<std::string, Channel*>::iterator	it;
+
+	for (it = _channels.begin(); it != _channels.end(); it++)
+	{
+		for (size_t i = 0; i < client.getChannels().size(); i++)
+		{
+			if (it->first == client.getChannels()[i]->getName())
+			{
+				it->second->removeMember(client);
+				createStreamingResponse(client, Message(), client.getChannels()[i]->getNicks());
+			}
+		}
+	}
+}
+
+void	Server::channelCleanup()
+{
+	const std::vector<int>		&error_clients = _event_manager.errorClients();
+
+	for (size_t i = 0; i < error_clients.size(); i++)
+	{
+		if (std::find(_clients2rm.begin(), _clients2rm.end(), error_clients[i]) == _clients2rm.end())
+			_clients2rm.push_back(error_clients[i]);
+	}
+	for (size_t i = 0; i < _clients2rm.size(); i++)
+		removeFromChannels(*_clients[_clients2rm[i]]);
+}
+
 void	Server::removeClients()
 {
 	const std::vector<int>		&error_clients = _event_manager.errorClients();
@@ -58,8 +88,8 @@ void	Server::removeClients()
 	}
 	for (size_t i = 0; i < _clients2rm.size(); i++)
 	{
-		_clients.erase(_clients2rm[i]);
 		delete _clients[_clients2rm[i]];
+		_clients.erase(_clients2rm[i]);
 		_event_manager.close(_clients2rm[i]);
 		std::cout << "\033[32m✔\033[0m Client " << _clients2rm[i] << " disconnected." << std::endl;
 	}
@@ -148,6 +178,7 @@ void	Server::execute(Client &client, const Message &message, const commands &com
 			break ;
 		case PART:
 			channelPart(client, message);
+			break;
 		case INVALID:
 			client.setResponse(Response(client, message, ERR_UNKNOWNCOMMAND));
 			break ;
@@ -331,6 +362,7 @@ void	Server::run(const int &port, const std::string &password)
 		readClients();
 		registerClients();
 		executeCommands();
+		channelCleanup();
 		respondClients();
 		checkWritingDone();
 		removeClients();

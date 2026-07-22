@@ -7,6 +7,9 @@
     sleep 0.2
     
     echo "USER trump 0 * :Donnald Trump"
+    sleep 0.2
+
+	echo "JOIN #test"
     
     cat
 ) | nc -c localhost 6667

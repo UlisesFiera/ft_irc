@@ -71,6 +71,8 @@ commands Message::resolveCommand()
 		return TOPIC;
 	if (_command == "MODE")
 		return MODE;
+	if (_command == "PART")
+		return PART;
 	else
 		return INVALID;
 }

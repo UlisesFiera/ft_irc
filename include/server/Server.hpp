@@ -51,6 +51,8 @@ class Server
 		void							respond(Response &response, int client_fd);
 		void							checkWritingDone();
 		void							removeClients();
+		void							channelCleanup();
+		void							removeFromChannels(Client &client);
 		void							executeCommands();
 		void							execute(Client &client, const Message &message, const commands &command);
 		void							registerPass(Client &client, const Message &message);
@@ -67,8 +69,6 @@ class Server
 		void							channelTopic(Client &client, const Message &message);
 		void							channelInvite(Client &client, const Message &message);
 		void							channelMode(Client &client, const Message &message);
-		void							modeParseFlags(Channel &channel, std::vector<std::string> &params);
-		void							modeParseArgs(Channel &channel, std::vector<std::string> &params);
 		bool							modeChecker(std::vector<std::string> &params);
 		void							executeMode(std::vector<std::string> &params, Client &client, const Message &message);
 		void							channelPart(Client &client, const Message &message);
