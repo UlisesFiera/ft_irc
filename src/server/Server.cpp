@@ -66,7 +66,7 @@ void	Server::removeFromChannels(Client &client)
 
 void	Server::channelCleanup()
 {
-	const std::vector<int>		&error_clients = _event_manager.errorClients();
+	const std::vector<int>	&error_clients = _event_manager.errorClients();
 
 	for (size_t i = 0; i < error_clients.size(); i++)
 	{
