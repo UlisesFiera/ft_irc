@@ -207,7 +207,6 @@ void	Response::buildStreamingResponse(const Message &message)
 		_trailing = message.getParams()[0];
 		response += " :" + _trailing;
 	}
-	response += _trailing;
 	response += "\r\n";
 	_response = response;
 }
@@ -285,6 +284,9 @@ void	Response::buildNumericResponse()
 			break ;
 		case ERR_UNKNOWNMODE:
 			response += _params + " :is unknown mode char to me";
+			break ;
+		case RPL_CHANNELMODEIS:
+			response += _params;
 			break ;
 		default:
 			response += ":Unknown reply";

@@ -19,12 +19,15 @@ size_t	Server::findcrfl(const std::string &stream)
 
 void	Server::createStreamingResponse(Client &client, const Message &message, const std::vector<std::string> &channel)
 {
+	int	target;
+
 	for (size_t i = 0; i < channel.size(); i++)
 	{	
 		if (nick2fd(channel[i]) == client.getFd())
 			continue ;
-		_event_manager.update(nick2fd(channel[i]), POLLOUT);
-		client.setResponse(Response(client, message, nick2fd(channel[i])));
+		target = nick2fd(channel[i]);
+		_event_manager.update(target, POLLOUT);
+		_clients[target]->setResponse(Response(client, message, target));
 	}
 }
 

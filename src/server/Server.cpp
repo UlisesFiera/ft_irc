@@ -57,8 +57,9 @@ void	Server::removeFromChannels(Client &client)
 		{
 			if (it->first == client.getChannels()[i]->getName())
 			{
+				std::cout << "Removing " << client.getNick() << " from " << it->first << std::endl;
+				createStreamingResponse(client, Message("PART " + it->first), it->second->getNicks());
 				it->second->removeMember(client);
-				createStreamingResponse(client, Message(), client.getChannels()[i]->getNicks());
 			}
 		}
 	}
