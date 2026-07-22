@@ -125,6 +125,9 @@ void	Server::execute(Client &client, const Message &message, const commands &com
 	}
 	switch (message.getCommand())
 	{
+		case CAP:
+			createStreamingResponse(client, message, client.getFd());
+			break ;
 		case NICK:
 			changeNick(client, message);
 			break ;
@@ -195,13 +198,13 @@ void	Server::registerClients()
 std::string	Server::readStream(int client_fd)
 {
 	char		buffer[BUFFER_SIZE];
-	ssize_t		bytes_read = read(client_fd, buffer, BUFFER_SIZE);
+	ssize_t		bytes_read = recv(client_fd, buffer, BUFFER_SIZE, 0);
 	std::string	stored_stream = _clients[client_fd]->getStream();
 
 	std::cout << "Stream received from client " << client_fd << ": " << std::endl;
-	printcrlf(buffer, bytes_read);
 	if (bytes_read > 0)
 	{
+		printcrlf(buffer, bytes_read);
 		stored_stream.append(buffer, bytes_read);
 		_clients[client_fd]->setLastActivity(); 
 		return (stored_stream);

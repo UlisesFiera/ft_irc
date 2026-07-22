@@ -63,6 +63,8 @@ bool	Server::registerNick(Client &client, const Message &message)
 	}
 	for (it = _clients.begin(); it != _clients.end(); it++)
 	{
+		if (it->second->getFd() == client.getfd())
+			continue ;
 		if (it->second->getNick() == message.getParams()[0])
 		{
 			client.setResponse(Response(client, message, ERR_NICKNAMEINUSE));
@@ -89,6 +91,6 @@ void	Server::registerUser(Client &client, const Message &message)
 		client.setResponse(Response(client, message, ERR_ALREADYREGISTERED));
 		return ;
 	}
-	user = message.getParams()[0] + message.getParams()[1] + message.getParams()[2] + message.getParams()[3];
+	user = message.getParams()[0] + message.getParams()[1] + message.getParams()[2] + message.getTrailing();
 	client.setUser(user);
 }

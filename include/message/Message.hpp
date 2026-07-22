@@ -8,6 +8,7 @@ enum	commands
 {
 	INVALID,
 	NONE,
+	CAP,
 	NICK,
 	PASS,
 	USER,

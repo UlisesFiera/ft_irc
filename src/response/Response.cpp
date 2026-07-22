@@ -175,6 +175,13 @@ void	Response::buildStreamingResponse(const Message &message)
 	std::string prefix = ":" + _nick + "!" + _user + "@" + _host;
 
 	response = prefix + " " + getCommandString(_command);
+	if (_command == CAP)
+	{
+		response += " * LS :";
+		response += "\r\n";
+		_response = response;
+		return ;
+	}
 	if (_command != NICK && _command != INVITE)
 	{	
 		if (!_params.empty())
