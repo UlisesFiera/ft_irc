@@ -3,3 +3,5 @@
 test.py
 ircserv.dSYM
 notes.txt
+objs/
+ircserv

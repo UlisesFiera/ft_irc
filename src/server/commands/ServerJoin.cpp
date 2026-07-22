@@ -35,7 +35,6 @@ void Server::joinChannel(Client &client, const Message &message)
     }
 	else
 	{
-		std::cout << "[JOIN] Client " << client.getNick() << " joined channel " << channel_name << std::endl;
 		if (_channels[channel_name]->getPassword() != "")
 		{
 			if (message.getParams()[1] == "" || _channels[channel_name]->checkPassword(message.getParams()[1]))
@@ -51,18 +50,21 @@ void Server::joinChannel(Client &client, const Message &message)
 			return;
 		}
 
-		if (_channels[channel_name]->getInviteOnly() == true)
+		if (_channels[channel_name]->getInviteOnly() && !_channels[channel_name]->isInvited(client.getNick()))
 		{
-			if (!(_channels[channel_name]->isInvited(client.getNick())))
-			{
-				client.setResponse(Response(client, message, ERR_INVITEONLYCHAN));
-				return;
-			}
-		}
-		
-		if (client.isInChannel(channel_name))
+			client.setResponse(Response(client, message, ERR_INVITEONLYCHAN));
 			return;
+		}
+
+		if (_channels[channel_name]->getInviteOnly() == true)
+			client.getChannel(channel_name)->removeInvitation(client.getNick());
 	}
+
+	if (client.isInChannel(channel_name))
+		return;
+
+	std::cout << "[JOIN] Client " << client.getNick() << " joined channel " << channel_name << std::endl;
+
 	_channels[channel_name]->setMembers(&client);
 	client.setChannel(_channels[channel_name]);
 	createStreamingResponse(client, message, _channels[channel_name]->getNicks());
