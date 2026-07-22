@@ -53,6 +53,8 @@ std::string	Message::getTrailing() const
 
 commands Message::resolveCommand()
 {
+	if (_command == "CAP")
+		return CAP;
 	if (_command == "NICK")
 		return NICK;
 	if (_command == "PASS")
@@ -71,6 +73,10 @@ commands Message::resolveCommand()
 		return TOPIC;
 	if (_command == "MODE")
 		return MODE;
+	if (_command == "PING")
+		return PING;
+	if (_command == "PONG")
+		return PONG;
 	else
 		return INVALID;
 }

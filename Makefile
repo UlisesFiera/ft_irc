@@ -19,6 +19,7 @@ SRCS		= 	src/main.cpp\
 				src/server/commands/ServerPart.cpp\
 				src/server/commands/ServerPrivmsg.cpp\
 				src/server/commands/ServerTopic.cpp\
+				src/server/commands/ServerPingPong.cpp\
 				src/server/ServerUtils.cpp\
 				src/message/Message.cpp\
 				src/response/Response.cpp\

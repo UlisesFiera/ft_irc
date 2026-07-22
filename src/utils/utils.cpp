@@ -22,6 +22,8 @@ std::string	getCommandString(const commands &command)
 
 	switch (command)
 	{
+		case CAP:
+			return (cmd = "CAP");
 		case PRIVMSG:
 			return (cmd = "PRIVMSG");
 		case NICK:
@@ -40,6 +42,10 @@ std::string	getCommandString(const commands &command)
 			return (cmd = "MODE");
 		case KICK:
 			return (cmd = "KICK");
+		case PING:
+			return (cmd = "PING");
+		case PONG:
+			return (cmd = "PONG");
 		default:
 			return (cmd = "UNKNOWN");
 	}

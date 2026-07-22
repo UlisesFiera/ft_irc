@@ -146,6 +146,8 @@ std::string	Response::getCommandString(const commands &command)
 
 	switch (command)
 	{
+		case CAP:
+			return (cmd = "PRIVMSG");
 		case PRIVMSG:
 			return (cmd = "PRIVMSG");
 		case NICK:
@@ -164,6 +166,10 @@ std::string	Response::getCommandString(const commands &command)
 			return (cmd = "MODE");
 		case KICK:
 			return (cmd = "KICK");
+		case PING:
+			return (cmd = "PING");
+		case PONG:
+			return (cmd = "PONG");
 		default:
 			return (cmd = "UNKNOWN");
 	}
@@ -199,6 +205,7 @@ void	Response::buildStreamingResponse(const Message &message)
 		_trailing = message.getParams()[0];
 		response += " :" + _trailing;
 	}
+	response += _trailing;
 	response += "\r\n";
 	_response = response;
 }

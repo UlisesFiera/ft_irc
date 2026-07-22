@@ -92,11 +92,11 @@ void	Server::respond(Response &response, int client_fd)
 
 	if (sent < 0)
 	{
-		std::cerr << "Error writing to client " << client_fd << std::endl;
+		std::cerr << "\033[31m✗\033[0m Error writing to client " << client_fd << std::endl;
 		return ;
 	}
 	response.setBytesSent(response.getBytesSent() + sent);
-	std::cout << "Response stream sent to client " << client_fd << " :" <<  remainder << std::endl;
+	std::cout << "--> Response stream sent to client " << client_fd << " :" <<  remainder;
 }
 
 void	Server::respondClients()
@@ -113,7 +113,7 @@ void	Server::respondClients()
 
 void	Server::execute(Client &client, const Message &message, const commands &command)
 {
-	std::cout << "Executing command " << getCommandString(command) << " for client " << client.getFd() << std::endl;
+	std::cout << "[▶] Executing command " << getCommandString(command) << " for client " << client.getFd() << std::endl;
 	if (command == USER || command == PASS)
 		return ;
 	if (command == NICK && !client.isRegistered())
@@ -151,6 +151,10 @@ void	Server::execute(Client &client, const Message &message, const commands &com
 			break ;
 		case PART:
 			channelPart(client, message);
+		case PING:
+			pingpong(client, message);
+		case PONG:
+			pingpong(client, message);
 		case INVALID:
 			client.setResponse(Response(client, message, ERR_UNKNOWNCOMMAND));
 			break ;
@@ -201,9 +205,9 @@ std::string	Server::readStream(int client_fd)
 	ssize_t		bytes_read = recv(client_fd, buffer, BUFFER_SIZE, 0);
 	std::string	stored_stream = _clients[client_fd]->getStream();
 
-	std::cout << "Stream received from client " << client_fd << ": " << std::endl;
 	if (bytes_read > 0)
 	{
+		std::cout << "<-- Stream received from client " << client_fd << ": ";
 		printcrlf(buffer, bytes_read);
 		stored_stream.append(buffer, bytes_read);
 		_clients[client_fd]->setLastActivity(); 

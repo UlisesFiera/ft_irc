@@ -15,7 +15,7 @@
 # include "channel/Channel.hpp"
 
 # define BUFFER_SIZE 1024
-# define NICK_SIZE 9
+# define NICK_SIZE 30
 
 class Server
 {
@@ -67,11 +67,10 @@ class Server
 		void							channelTopic(Client &client, const Message &message);
 		void							channelInvite(Client &client, const Message &message);
 		void							channelMode(Client &client, const Message &message);
-		void							modeParseFlags(Channel &channel, std::vector<std::string> &params);
-		void							modeParseArgs(Channel &channel, std::vector<std::string> &params);
 		bool							modeChecker(std::vector<std::string> &params);
 		void							executeMode(std::vector<std::string> &params, Client &client, const Message &message);
 		void							channelPart(Client &client, const Message &message);
+		void							pingpong(Client &client, const Message &message);
 
 		// Utils
 		int								nick2fd(const std::string &nick);

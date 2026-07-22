@@ -18,7 +18,9 @@ enum	commands
 	INVITE,
 	TOPIC,
 	MODE,
-	PART
+	PART,
+	PING,
+	PONG
 };
 
 class Message
