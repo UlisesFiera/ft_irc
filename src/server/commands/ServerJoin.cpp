@@ -57,7 +57,7 @@ void Server::joinChannel(Client &client, const Message &message)
 			return;
 		}
 
-		else
+		if (_channels[channel_name]->getInviteOnly() == true)
 			client.getChannel(channel_name)->removeInvitation(client.getNick());
 	}
 
