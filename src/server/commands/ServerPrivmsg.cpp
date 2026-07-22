@@ -17,7 +17,7 @@ void	Server::sendPrivmsg(Client &client, const Message &message)
 	if (target[0] == '#')
 	{
 		target.substr(1);
-		for (size_t i = 0; client.getChannels().size(); i++)
+		for (size_t i = 0; i < client.getChannels().size(); i++)
 		{
 			if (target == client.getChannels()[i]->getName())
 			{
