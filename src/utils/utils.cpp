@@ -46,6 +46,8 @@ std::string	getCommandString(const commands &command)
 			return (cmd = "PING");
 		case PONG:
 			return (cmd = "PONG");
+		case PART:
+			return (cmd = "PART");
 		default:
 			return (cmd = "UNKNOWN");
 	}

@@ -77,6 +77,8 @@ commands Message::resolveCommand()
 		return PING;
 	if (_command == "PONG")
 		return PONG;
+	if (_command == "PART")
+		return PART;
 	else
 		return INVALID;
 }

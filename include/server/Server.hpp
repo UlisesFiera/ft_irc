@@ -51,6 +51,8 @@ class Server
 		void							respond(Response &response, int client_fd);
 		void							checkWritingDone();
 		void							removeClients();
+		void							channelCleanup();
+		void							removeFromChannels(Client &client);
 		void							executeCommands();
 		void							execute(Client &client, const Message &message, const commands &command);
 		void							registerPass(Client &client, const Message &message);
