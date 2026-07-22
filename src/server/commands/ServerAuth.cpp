@@ -63,7 +63,7 @@ bool	Server::registerNick(Client &client, const Message &message)
 	}
 	for (it = _clients.begin(); it != _clients.end(); it++)
 	{
-		if (it->second->getFd() == client.getfd())
+		if (it->second->getFd() == client.getFd())
 			continue ;
 		if (it->second->getNick() == message.getParams()[0])
 		{
