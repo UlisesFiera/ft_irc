@@ -16,6 +16,7 @@ SRCS		= 	src/main.cpp\
 				src/server/commands/ServerKick.cpp\
 				src/server/commands/ServerMode.cpp\
 				src/server/commands/ServerNick.cpp\
+				src/server/commands/ServerPart.cpp\
 				src/server/commands/ServerPrivmsg.cpp\
 				src/server/commands/ServerTopic.cpp\
 				src/server/ServerUtils.cpp\

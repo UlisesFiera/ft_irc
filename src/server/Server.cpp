@@ -138,11 +138,16 @@ void	Server::execute(Client &client, const Message &message, const commands &com
 			kickChannel(client, message);
 			break ;
 		case INVITE:
+			channelInvite(client, message);
 			break ;
 		case TOPIC:
+			channelTopic(client, message);
 			break ;
 		case MODE:
+			channelMode(client, message);
 			break ;
+		case PART:
+			channelPart(client, message);
 		case INVALID:
 			client.setResponse(Response(client, message, ERR_UNKNOWNCOMMAND));
 			break ;

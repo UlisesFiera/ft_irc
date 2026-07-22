@@ -77,7 +77,12 @@ void Server::executeMode(std::vector<std::string> &params, Client &client, const
             }
 
             if (c == 'i')
-                _channels[channel_name]->setInviteOnly((sign == '+'));
+			{
+				if (sign == '+')
+                	_channels[channel_name]->setInviteOnly(true);
+				if (sign == '-')
+                	_channels[channel_name]->setInviteOnly(false);
+			}
             else if (c == 't')
                 _channels[channel_name]->setTopicRestricted((sign == '+'));
             
