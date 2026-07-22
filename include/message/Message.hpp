@@ -16,7 +16,8 @@ enum	commands
 	KICK,
 	INVITE,
 	TOPIC,
-	MODE
+	MODE,
+	PART
 };
 
 class Message

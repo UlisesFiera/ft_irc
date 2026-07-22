@@ -46,9 +46,10 @@ class Channel
 		void								removeInvitation(const std::string &nick);
 		bool								isOperator(const std::string &client_nick);
 		std::vector<std::string>			getNicks();
-		void								removeMembers(const Client &client_nick);
+		void								removeMember(const Client &client_nick);
 		bool 								isInChannel(const std::string &client_nick);
 		void								removeOperator(const std::string &target_operator);
+		bool								isEmpty();
 
 
 	private:

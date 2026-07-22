@@ -71,6 +71,7 @@ class Server
 		void							modeParseArgs(Channel &channel, std::vector<std::string> &params);
 		bool							modeChecker(std::vector<std::string> &params);
 		void							executeMode(std::vector<std::string> &params, Client &client, const Message &message);
+		void							channelPart(Client &client, const Message &message);
 
 		// Utils
 		int								nick2fd(const std::string &nick);

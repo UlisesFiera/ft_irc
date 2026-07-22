@@ -211,7 +211,7 @@ std::vector<std::string>	Channel::getNicks()
 	return clients;
 }
 
-void Channel::removeMembers(const Client &client)
+void Channel::removeMember(const Client &client)
 {
     std::vector<Client*>::iterator it;
 
@@ -247,4 +247,11 @@ void Channel::removeOperator(const std::string &target_operator)
 			break;
 		}
 	}
+}
+
+bool Channel::isEmpty()
+{
+	if (this->getNicks().empty())
+		return true;
+	return false;
 }

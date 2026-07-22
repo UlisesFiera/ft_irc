@@ -25,6 +25,7 @@ void Server::joinChannel(Client &client, const Message &message)
 
 			_channels[channel_name] = new_channel;
 			std::cout << "[JOIN] Channel " << channel_name << " created by " << client.getNick() << std::endl;
+			_channels[channel_name]->setOperator(client.getNick());
 		}
         
         catch(const std::exception& e)

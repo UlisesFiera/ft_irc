@@ -43,7 +43,7 @@ Response::Response(const Client &client, const Message &message, const int &targ
 	_nick = client.getNick();
 	_user = client.getUser();
 	for (size_t i = 0; i < message.getParams().size(); i++)
-		_params += message.getParams()[i];
+		_params += message.getParams()[i] + " ";
 	_command = message.getCommand();
 	_trailing = message.getTrailing();
 	if (_nick == "")
