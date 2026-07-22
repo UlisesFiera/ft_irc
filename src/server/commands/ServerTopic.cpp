@@ -37,14 +37,12 @@ void Server::channelTopic(Client &client, const Message &message)
 
 	if (message.getParams().size() == 1 && message.getTrailing() == "" && client.getChannel(channel_name)->getTopic() != "")
 	{
-		// [REVISAR CON ULISES] mandarle al cliente el topic del canal
-		createStreamingResponse(client, message, client.getFd());
+		client.setResponse(Response(client, message, RPL_TOPIC));
 		return;
 	}
 
 	if (message.getParams().size() == 1 && message.getTrailing() != "")
 	{
-		// [REVISAR CON ULISES] mandar un broadcast de que se ha cambiado el topic del canal y al cliente que lo ha cambiado
 		client.getChannel(channel_name)->setTopic(new_topic);
 		createStreamingResponse(client, message, _channels[channel_name]->getNicks());
 		createStreamingResponse(client, message, client.getFd());

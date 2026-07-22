@@ -32,6 +32,7 @@ void Server::channelPart(Client &client, const Message &message)
 		{
 			if ((it->second)->getName() == _channels[channel_name]->getName())
 			{
+				delete it->second;
 				_channels.erase(it);
 				break;
 			}
