@@ -61,7 +61,7 @@ void	EventManager::addEvent(const int fd, const short event)
 	pollfd.events = event;
 	pollfd.revents = 0;
 	_pollfds.push_back(pollfd);
-	std::cout << "Socket " << fd << " added event " << event2str(event) << std::endl;
+	std::cout << "\033[35mircserv@asulgernan:\033[0mSocket " << fd << " added event " << event2str(event) << std::endl;
 }
 
 void	EventManager::addListen(int fd)
@@ -99,7 +99,7 @@ void	EventManager::close(int fd)
 			::close(fd);
 			_pollfds.erase(it);
 			_socketfd2event.erase(fd);
-			std::cout << "Socket " << fd << " closed" << std::endl;
+			std::cout << "\033[35mircserv@asulgernan:\033[0mSocket " << fd << " closed" << std::endl;
 			break ;
 		}
 	}
@@ -113,7 +113,7 @@ void	EventManager::update(int fd, short event)
 	{
 		if (it->fd == fd)
 		{
-			std::cout << "Socket " << fd << " swapped to " << event2str(event) << std::endl;
+			std::cout << "\033[35mircserv@asulgernan:\033[0mSocket " << fd << " swapped to " << event2str(event) << std::endl;
 			it->events |= event;
 			break ;
 		}
@@ -128,7 +128,7 @@ void	EventManager::clear(int fd, short event)
 	{
 		if (it->fd == fd)
 		{
-			std::cout << "Socket " << fd << " cleared " << event2str(event) << std::endl;
+			std::cout << "\033[35mircserv@asulgernan:\033[0mSocket " << fd << " cleared " << event2str(event) << std::endl;
 			it->events &= ~event;
 			break ;
 		}

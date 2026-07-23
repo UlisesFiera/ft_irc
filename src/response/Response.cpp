@@ -5,7 +5,7 @@
 
 Response::Response()
 {
-	_host = "hostname";
+	_addr = "hostname";
 	_reply_code = ERR_UNKNOWNCOMMAND;
 	_command = NONE;
 	_nick = "*";
@@ -21,7 +21,7 @@ Response::Response(const Client &client, const Message &message, const ReplyCode
 	_targets.push_back(client.getFd());
 	_bytes_sent = 0;
 	_reply_code = code;
-	_host = client.getHost();
+	_addr = client.getAddr();
 	_nick = client.getNick();
 	_user = client.getUser();
 	for (size_t i = 0; i < message.getParams().size(); i++)
@@ -39,7 +39,7 @@ Response::Response(const Client &client, const Message &message, const int &targ
 {
 	_targets.push_back(target);
 	_bytes_sent = 0;
-	_host = client.getHost();
+	_addr = client.getAddr();
 	_nick = client.getNick();
 	_user = client.getUser();
 	for (size_t i = 0; i < message.getParams().size(); i++)
@@ -57,7 +57,7 @@ Response::Response(const Client &client, const Message &message, const std::vect
 {
 	_targets = targets;
 	_bytes_sent = 0;
-	_host = client.getHost();
+	_addr = client.getAddr();
 	_nick = client.getNick();
 	_user = client.getUser();
 	for (size_t i = 0; i < message.getParams().size(); i++)
@@ -75,7 +75,7 @@ Response::Response(const Client &client, const Message &message, const std::vect
 
 Response::Response(const Response& copyResponse)
 {
-	_host = copyResponse._host;
+	_addr = copyResponse._addr;
 	_reply_code = copyResponse._reply_code;
 	_command = copyResponse._command;
 	_nick = copyResponse._nick;
@@ -95,7 +95,7 @@ Response& Response::operator=(const Response& copyResponse)
 {
 	if (this != &copyResponse)
 	{
-		_host = copyResponse._host;
+		_addr = copyResponse._addr;
 		_reply_code = copyResponse._reply_code;
 		_command = copyResponse._command;
 		_nick = copyResponse._nick;
@@ -180,9 +180,15 @@ std::string	Response::getCommandString(const commands &command)
 void	Response::buildStreamingResponse(const Message &message)
 {
 	std::string	response;
-	std::string prefix = ":" + _nick + "!" + _user + "@" + _host;
+	std::string prefix = ":" + _nick + "!" + _user + "@" + _addr;
 
 	response = prefix + " " + getCommandString(_command);
+	if (_command == PONG)
+	{
+		response = "PONG :irc.asulgernan.lol\r\n";
+		_response = response;
+		return ;
+	}
 	if (_command == CAP)
 	{
 		if (message.getParams()[0] == "END")
@@ -233,7 +239,24 @@ void	Response::buildNumericResponse()
 	switch (_reply_code)
 	{
 		case RPL_WELCOME:
-			response += ":Welcome to the Internet Relay Network " + _nick + "!" + _user + "@" + _host;
+			response += ":Welcome to the Internet Relay Network " + _nick + "!" + _user + "@" + _addr;
+			break ;
+		case RPL_YOURHOST:
+			response += ":Your host is irc.asulgernan.lol, running version ft_irc-1.0";
+			break ;
+		case RPL_CREATED:
+			response += ":This server was created Jul 23 2026";
+			break ;
+		case RPL_MYINFO:
+			response += "irc.asulgernan.lol ft_irc-1.0 oi o";
+			break ;
+		case RPL_ISUPPORT:
+			response += "CHANTYPES=# "
+				"PREFIX=(o)@ "
+				"CHANMODES,,, "
+				"NICKLEN=30 "
+				"NETWORK=ft_irc "
+				":are supported by this server";
 			break ;
 		case ERR_NONICKNAMEGIVEN:
 			response += ":No nickname given";

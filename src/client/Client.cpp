@@ -43,6 +43,11 @@ Client::~Client()
 
 }
 
+const std::string	&Client::getAddr() const
+{
+	return (_addr);
+}
+
 const int	&Client::getFd() const
 {
 	return (_fd);
@@ -175,7 +180,10 @@ void	Client::setFd(const int &fd)
 	_fd = fd;
 }
 
-
+void	Client::setAddr(const std::string &addr)
+{
+	_addr = addr;
+}
 
 bool	Client::isInChannel(const std::string &channel)
 {

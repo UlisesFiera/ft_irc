@@ -15,6 +15,7 @@ enum ReplyCode
 	RPL_YOURHOST           = 002,
 	RPL_CREATED            = 003,
 	RPL_MYINFO             = 004,
+	RPL_ISUPPORT		   = 005,
 
 	// Command replies
 	RPL_CHANNELMODEIS	   = 324,
@@ -76,7 +77,7 @@ class Response
 		std::string					getCommandString(const commands &command);
 		std::string					header();
 
-		std::string 				_host;
+		std::string 				_addr;
 		ReplyCode					_reply_code;
 		commands					_command;
 		std::string					_nick;

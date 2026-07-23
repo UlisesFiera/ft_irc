@@ -57,7 +57,7 @@ void	Server::removeFromChannels(Client &client)
 		{
 			if (it->first == client.getChannels()[i]->getName())
 			{
-				std::cout << "Removing " << client.getNick() << " from " << it->first << std::endl;
+				std::cout << "\033[35mircserv@asulgernan:\033[0mRemoving " << client.getNick() << " from " << it->first << std::endl;
 				createStreamingResponse(client, Message("PART " + it->first), it->second->getNicks());
 				it->second->removeMember(client);
 			}
@@ -92,7 +92,7 @@ void	Server::removeClients()
 		delete _clients[_clients2rm[i]];
 		_clients.erase(_clients2rm[i]);
 		_event_manager.close(_clients2rm[i]);
-		std::cout << "\033[32m✔\033[0m Client " << _clients2rm[i] << " disconnected." << std::endl;
+		std::cout << "\033[35mircserv@asulgernan:\033[0mClient " << _clients2rm[i] << " disconnected." << std::endl;
 	}
 }
 
@@ -122,11 +122,15 @@ void	Server::respond(Response &response, int client_fd)
 
 	if (sent < 0)
 	{
-		std::cerr << "\033[31m✗\033[0m Error writing to client " << client_fd << std::endl;
+		std::cerr << "\033[35mircserv@asulgernan:\033[0mError writing to client " << client_fd << std::endl;
 		return ;
 	}
-	response.setBytesSent(response.getBytesSent() + sent);
-	std::cout << "--> Response stream sent to client " << client_fd << " :" <<  remainder;
+	if (sent > 0)
+	{
+		response.setBytesSent(response.getBytesSent() + sent);
+		std::cout << "\033[35mircserv@asulgernan:\033[0mResponse stream sent to client " << client_fd << ":\n\033[33mclient@" << client_fd << ":\033[0m";
+		printcrlf(remainder, sent);
+	}
 }
 
 void	Server::respondClients()
@@ -143,9 +147,7 @@ void	Server::respondClients()
 
 void	Server::execute(Client &client, const Message &message, const commands &command)
 {
-	if (client.getPass() == "")
-		return ;
-	std::cout << "[▶] Executing command " << getCommandString(command) << " for client " << client.getFd() << std::endl;
+	std::cout << "\033[35mircserv@asulgernan:\033[0mExecuting command " << getCommandString(command) << " for client " << client.getFd() << std::endl;
 	if (message.getCommand() == CAP)
 	{
 		createStreamingResponse(client, message, client.getFd());
@@ -220,12 +222,19 @@ void	Server::registerClients()
 		{
 			for (size_t j = 0; j < _clients[read_clients[i]]->getMessages().size(); j++)
 			{
+				if (_clients[read_clients[i]]->getMessages()[j].getCommand() == CAP)
+					continue ;
+				if (_clients[read_clients[i]]->getMessages()[j].getCommand() != NICK
+					&& _clients[read_clients[i]]->getMessages()[j].getCommand() != USER
+					&& _clients[read_clients[i]]->getMessages()[j].getCommand() != PASS)
+					continue ;
 				registerPass(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j]);
 				registerNick(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j]);
 				registerUser(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j]);
 				if (_clients[read_clients[i]]->getPass() == "")
 				{
 					_clients[read_clients[i]]->setResponse(Response(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j], ERR_PASSWDMISMATCH));
+					_clients2rm.push_back(_clients[read_clients[i]]->getFd());
 					_event_manager.clear(_clients[read_clients[i]]->getFd(), POLLIN);
 					return ;
 				}
@@ -233,6 +242,10 @@ void	Server::registerClients()
 				{
 					_clients[read_clients[i]]->setRegistered(true);
 					_clients[read_clients[i]]->setResponse(Response(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j], RPL_WELCOME));
+					_clients[read_clients[i]]->setResponse(Response(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j], RPL_YOURHOST));
+					_clients[read_clients[i]]->setResponse(Response(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j], RPL_CREATED));
+					_clients[read_clients[i]]->setResponse(Response(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j], RPL_MYINFO));
+					_clients[read_clients[i]]->setResponse(Response(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j], RPL_ISUPPORT));
 				}
 			}
 		}
@@ -247,19 +260,23 @@ std::string	Server::readStream(int client_fd)
 
 	if (bytes_read > 0)
 	{
-		std::cout << "<-- Stream received from client " << client_fd << ": ";
+		std::cout << "\033[35mircserv@asulgernan:\033[0mStream received from client " << client_fd << ":\n\033[33mclient@" << client_fd << ":\033[0m";
 		printcrlf(buffer, bytes_read);
 		stored_stream.append(buffer, bytes_read);
 		_clients[client_fd]->setLastActivity(); 
 		return (stored_stream);
 	}
 	else if (bytes_read == 0)
+	{
+		std::cout << "\033[35mircserv@asulgernan:\033[0mClient " << client_fd << " closed the connection" << std::endl;
+		_clients2rm.push_back(client_fd);
 		return ("");
+	}
 	else
 	{
 		if (errno == EWOULDBLOCK || errno == EAGAIN)
 			return ("");
-		throw std::runtime_error("Read() failed");
+		throw std::runtime_error("\033[35mircserv@asulgernan:\033[0mRead() failed");
 	}
 }
 
@@ -283,15 +300,7 @@ void	Server::readClients()
 			continue ;
 		}
 		if (stream == "")
-		{
-			if (errno == EWOULDBLOCK || errno == EAGAIN)
-				continue ;
-			else
-			{
-				_clients2rm.push_back(read_clients[i]);
-				continue ;
-			}
-		}
+			continue ;
 		else
 		{
 			pos = findcrfl(stream);
@@ -321,10 +330,10 @@ void	Server::acceptClients()
 		{
 			if (errno == EWOULDBLOCK || errno == EAGAIN)
 				break ;
-			std::cerr << "[ERROR] connecting client: accept() failed.\n";
+			std::cerr << "\033[35mircserv@asulgernan:\033[0mError connecting client: accept() failed.\n";
 			return ;
 		}
-		std::cout << "\033[32m✔\033[0m New client over IP: " << inet_ntoa(addr.sin_addr) 
+		std::cout << "\033[35mircserv@asulgernan:\033[0mNew client over IP: " << inet_ntoa(addr.sin_addr) 
 					<< " port: " << ntohs(addr.sin_port) 
 					<< " fd: " << clientfd << std::endl;
 		_clients[clientfd] = new Client();
@@ -332,6 +341,7 @@ void	Server::acceptClients()
 		_clients[clientfd]->setPort(_listening_socket.getPort());
 		_clients[clientfd]->setHost(_host);
 		_clients[clientfd]->setFd(clientfd);
+		_clients[clientfd]->setAddr(inet_ntoa(addr.sin_addr));
 	}
 }
 
@@ -344,7 +354,7 @@ void	Server::initListeningSocket()
 	}
 	catch (std::runtime_error &e)
 	{
-		std::cerr << "Couldn't initialize server\n" << e.what();
+		std::cerr << "\033[35mircserv@asulgernan:\033[0mCouldn't initialize server\n" << e.what();
 		exit(1);
 	}
 }
@@ -360,10 +370,10 @@ void	Server::run(const int &port, const std::string &password)
 	_event_manager.addListen(_listening_socket.getSocketFd());
 	if (signal(SIGINT, signal_handler) == SIG_ERR)
 	{
-		std::cerr << "Failed to register SIGINT handler.\n";
+		std::cerr << "\033[35mircserv@asulgernan:\033[0mFailed to register SIGINT handler.\n";
 		return ;
 	}
-	std::cout << "Waiting for connections..." << std::endl;
+	std::cout << "\033[35mircserv@asulgernan:\033[0mWaiting for connections..." << std::endl;
 	while (stop_server == 0)
 	{
 		ready_fds = poll(_event_manager.pollfds(), _event_manager.size(), -1);
@@ -383,5 +393,5 @@ void	Server::run(const int &port, const std::string &password)
 		checkWritingDone();
 		removeClients();
 	}
-	std::cout << "\nSIGINT received. Initiating server shutdown...";
+	std::cout << "\n\033[35mircserv@asulgernan:\033[0mSIGINT received. Initiating server shutdown...";
 }

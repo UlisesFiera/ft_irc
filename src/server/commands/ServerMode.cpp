@@ -138,6 +138,12 @@ void Server::channelMode(Client &client, const Message &message)
     std::string channel_name = message.getParams()[0];
     std::vector<std::string> params = message.getParams();
 
+	// check included to manage the mandatory connection check MODE <nick> +i
+	if (channel_name[0] != '#' && params.size() == 2 && params[1] == "+i")
+	{
+		createStreamingResponse(client, message, client.getFd());
+		return ;
+	}
     if (!checkChannel(channel_name))
     {
         client.setResponse(Response(client, message, ERR_NOSUCHCHANNEL));
