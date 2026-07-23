@@ -4,10 +4,6 @@ Client::Client()
 {
 	_lastActivity = time(NULL);
 	_registered = false;
-	_pass = "";
-	_nick = "";
-	_user = "";
-	_host = "";
 }
 
 Client::Client(const Client &copyClient)
@@ -21,6 +17,7 @@ Client::Client(const Client &copyClient)
 	_user = copyClient._user;
 	_responses = copyClient._responses;
 	_host = copyClient._host;
+	_name = copyClient._name;
 }
 
 Client	&Client::operator=(const Client &copyClient)
@@ -36,6 +33,7 @@ Client	&Client::operator=(const Client &copyClient)
 		_user = copyClient._user;
 		_responses = copyClient._responses;
 		_host = copyClient._host;
+		_name = copyClient._name;
 	}
 	return (*this);
 }
@@ -145,6 +143,11 @@ void	Client::setPass(const std::string &pass)
 void	Client::setNick(const std::string &nick)
 {
 	_nick = nick;
+}
+
+void	Client::setName(const std::string &name)
+{
+	_name = name;
 }
 
 void	Client::setUser(const std::string &user)

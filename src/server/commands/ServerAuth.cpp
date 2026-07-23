@@ -78,6 +78,7 @@ bool	Server::registerNick(Client &client, const Message &message)
 void	Server::registerUser(Client &client, const Message &message)
 {
 	std::string	user;
+	std::string	real_name;
 
 	if (message.getCommand() != USER)
 		return ;
@@ -91,6 +92,8 @@ void	Server::registerUser(Client &client, const Message &message)
 		client.setResponse(Response(client, message, ERR_ALREADYREGISTERED));
 		return ;
 	}
-	user = message.getParams()[0] + message.getParams()[1] + message.getParams()[2] + message.getTrailing();
+	user = message.getParams()[0];
+	real_name = message.getTrailing();
 	client.setUser(user);
+	client.setName(real_name);
 }

@@ -94,7 +94,6 @@ void	Server::removeClients()
 		_event_manager.close(_clients2rm[i]);
 		std::cout << "\033[32m✔\033[0m Client " << _clients2rm[i] << " disconnected." << std::endl;
 	}
-	_clients2rm.clear();
 }
 
 void	Server::checkWritingDone()
@@ -144,7 +143,14 @@ void	Server::respondClients()
 
 void	Server::execute(Client &client, const Message &message, const commands &command)
 {
+	if (client.getPass() == "")
+		return ;
 	std::cout << "[▶] Executing command " << getCommandString(command) << " for client " << client.getFd() << std::endl;
+	if (message.getCommand() == CAP)
+	{
+		createStreamingResponse(client, message, client.getFd());
+		return ;
+	}
 	if (command == USER || command == PASS)
 		return ;
 	if (command == NICK && !client.isRegistered())
@@ -156,9 +162,6 @@ void	Server::execute(Client &client, const Message &message, const commands &com
 	}
 	switch (message.getCommand())
 	{
-		case CAP:
-			createStreamingResponse(client, message, client.getFd());
-			break ;
 		case NICK:
 			changeNick(client, message);
 			break ;
@@ -183,11 +186,8 @@ void	Server::execute(Client &client, const Message &message, const commands &com
 		case PART:
 			channelPart(client, message);
 			break;
-		case PING:
-			pingpong(client, message);
-			break ;
 		case PONG:
-			pingpong(client, message);
+			pong(client, message);
 			break ;
 		case INVALID:
 			client.setResponse(Response(client, message, ERR_UNKNOWNCOMMAND));
@@ -223,6 +223,12 @@ void	Server::registerClients()
 				registerPass(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j]);
 				registerNick(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j]);
 				registerUser(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j]);
+				if (_clients[read_clients[i]]->getPass() == "")
+				{
+					_clients[read_clients[i]]->setResponse(Response(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j], ERR_PASSWDMISMATCH));
+					_event_manager.clear(_clients[read_clients[i]]->getFd(), POLLIN);
+					return ;
+				}
 				if (_clients[read_clients[i]]->getPass() != "" && _clients[read_clients[i]]->getUser() != "" && _clients[read_clients[i]]->getNick() != "")
 				{
 					_clients[read_clients[i]]->setRegistered(true);
@@ -259,9 +265,9 @@ std::string	Server::readStream(int client_fd)
 
 void	Server::readClients()
 {
-	const std::vector<int>	&read_clients = _event_manager.readableClients();
-	std::string				stream;
-	size_t					pos;
+	const std::vector<int>		&read_clients = _event_manager.readableClients();
+	std::string					stream;
+	size_t						pos;
 
 	for (size_t i = 0; i < read_clients.size(); i++)
 	{
@@ -377,5 +383,5 @@ void	Server::run(const int &port, const std::string &password)
 		checkWritingDone();
 		removeClients();
 	}
-	std::cout << "\nSIGINT received. Initiating server shutdown..." << '\n';
+	std::cout << "\nSIGINT received. Initiating server shutdown...";
 }

@@ -74,9 +74,9 @@ commands Message::resolveCommand()
 	if (_command == "MODE")
 		return MODE;
 	if (_command == "PING")
-		return PING;
-	if (_command == "PONG")
 		return PONG;
+	if (_command == "PONG")
+		return PING;
 	if (_command == "PART")
 		return PART;
 	else

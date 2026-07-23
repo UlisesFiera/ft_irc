@@ -52,6 +52,7 @@ class Client
 		void							setPass(const std::string &pass);
 		void							setNick(const std::string &nick);
 		void							setUser(const std::string &user);
+		void							setName(const std::string &name);
 		void							setResponse(const Response &response);
 		void							setHost(const std::string &host);
 		void							setChannel(Channel *channel);
@@ -62,6 +63,7 @@ class Client
 
 	private:
 		int								_fd;
+		std::string						_name;
 		std::string						_host;
 		int								_port;
 		time_t 							_lastActivity;

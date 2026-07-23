@@ -147,7 +147,7 @@ std::string	Response::getCommandString(const commands &command)
 	switch (command)
 	{
 		case CAP:
-			return (cmd = "PRIVMSG");
+			return (cmd = "CAP");
 		case PRIVMSG:
 			return (cmd = "PRIVMSG");
 		case NICK:
@@ -185,8 +185,12 @@ void	Response::buildStreamingResponse(const Message &message)
 	response = prefix + " " + getCommandString(_command);
 	if (_command == CAP)
 	{
-		response += " * LS :";
-		response += "\r\n";
+		if (message.getParams()[0] == "END")
+		{
+			std::cout << "CAP negotiation ended" << std::endl;
+			return ;
+		}
+		response = ":irc.asulgernan.lol CAP * LS :\r\n";
 		_response = response;
 		return ;
 	}
