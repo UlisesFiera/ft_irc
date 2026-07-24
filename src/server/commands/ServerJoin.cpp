@@ -34,6 +34,7 @@ void Server::joinChannel(Client &client, const Message &message)
             return;
         }
     }
+	
 	else
 	{
 		if (_channels[channel_name]->getInviteOnly() && !_channels[channel_name]->isInvited(client.getNick()))
@@ -42,22 +43,22 @@ void Server::joinChannel(Client &client, const Message &message)
 			return;
 		}
 
-		if (_channels[channel_name]->getPassword() != "" && _channels[channel_name]->getInviteOnly())
+		if (_channels[channel_name]->getPassword() != "")
 		{
-			if (message.getParams()[1] == "" || !_channels[channel_name]->checkPassword(message.getParams()[1]))
+			if (message.getParams().size() < 2 || !_channels[channel_name]->checkPassword(message.getParams()[1]))
 			{
 				client.setResponse(Response(client, message, ERR_BADCHANNELKEY));
 				return;
 			}
 		}
 
-		if (_channels[channel_name]->getUserLimit() != 0 && _channels[channel_name]->getUserLimit() >= _channels[channel_name]->getMembersVec().size())
+		if (_channels[channel_name]->getUserLimit() != 0 && _channels[channel_name]->getMembersVec().size() >= _channels[channel_name]->getUserLimit())
 		{
 			client.setResponse(Response(client, message, ERR_CHANNELISFULL));
 			return;
 		}
 
-		if (_channels[channel_name]->getInviteOnly() == true)
+		if (_channels[channel_name]->getInviteOnly())
 			_channels[channel_name]->removeInvitation(client.getNick());
 	}
 

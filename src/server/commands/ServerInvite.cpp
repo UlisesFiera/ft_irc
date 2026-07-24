@@ -41,5 +41,7 @@ void	Server::channelInvite(Client &client, const Message &message)
 		return;
 	}
 
+	createStreamingResponse(*_channels[channel_name]->getClientFromTarget(target), message, _channels[channel_name]->getClientFromTarget(target)->getFd());
+
 	return;
 }
