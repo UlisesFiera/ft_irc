@@ -87,12 +87,13 @@ void	Server::removeClients()
 		if (std::find(_clients2rm.begin(), _clients2rm.end(), error_clients[i]) == _clients2rm.end())
 			_clients2rm.push_back(error_clients[i]);
 	}
-	for (size_t i = 0; i < _clients2rm.size(); i++)
+	for (size_t i = 0; i < _clients2rm.size();)
 	{
 		delete _clients[_clients2rm[i]];
 		_clients.erase(_clients2rm[i]);
 		_event_manager.close(_clients2rm[i]);
 		std::cout << "\033[35mircserv@asulgernan:\033[0mClient " << _clients2rm[i] << " disconnected." << std::endl;
+		_clients2rm.erase(_clients2rm.begin() + i);
 	}
 }
 

@@ -3,6 +3,7 @@
 
 # include <iostream>
 # include <algorithm>
+# include <vector>
 
 # include "message/Message.hpp"
 # include "response/Response.hpp"

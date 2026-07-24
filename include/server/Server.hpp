@@ -13,6 +13,8 @@
 # include "message/Message.hpp"
 # include "utils/utils.hpp"
 # include "channel/Channel.hpp"
+# include <cerrno>
+# include <csignal>
 
 # define BUFFER_SIZE 1024
 # define NICK_SIZE 30

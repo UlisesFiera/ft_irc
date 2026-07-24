@@ -7,6 +7,7 @@
 
 # include "message/Message.hpp"
 # include "client/Client.hpp"
+# include "utils/utils.hpp"
 
 enum ReplyCode
 {

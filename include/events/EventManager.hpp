@@ -5,6 +5,8 @@
 # include <iostream>
 # include <map>
 # include <unistd.h>
+# include <vector>
+# include <cstring>
 
 class EventManager 
 {

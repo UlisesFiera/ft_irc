@@ -52,3 +52,13 @@ std::string	getCommandString(const commands &command)
 			return (cmd = "UNKNOWN");
 	}
 }
+
+std::string	to_string(const int &num)
+{
+	std::stringstream	ss;
+	std::string 		code;
+
+	ss << num;
+	code = ss.str();
+	return (code);
+}

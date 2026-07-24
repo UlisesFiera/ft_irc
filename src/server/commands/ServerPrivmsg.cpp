@@ -20,7 +20,6 @@ void	Server::sendPrivmsg(Client &client, const Message &message)
 			if (target == client.getChannels()[i]->getName())
 			{
 				createStreamingResponse(client, message, client.getChannels()[i]->getNicks());
-				createStreamingResponse(client, message, client.getFd());
 				return ;
 			}
 		}

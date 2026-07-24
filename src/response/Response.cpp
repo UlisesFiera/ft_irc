@@ -236,7 +236,7 @@ void	Response::buildStreamingResponse(const Message &message)
 std::string	Response::header()
 {
 	std::string	header;
-	std::string	code = std::to_string(_reply_code);
+	std::string	code = to_string(_reply_code);
 
 	if (code.size() == 1)
 		code.insert(0, "00");
@@ -289,7 +289,7 @@ void	Response::buildNumericResponse()
 			response += ":Password incorrect";
 			break ;
 		case ERR_UNKNOWNCOMMAND:
-			response += _params + " :Unknown command";
+			response += getCommandString(_command) + " " + _params + " :Unknown command";
 			break ;
 		case ERR_NOTREGISTERED:
 			response += ":You have not registered";
