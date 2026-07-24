@@ -35,5 +35,5 @@ void	Server::createStreamingResponse(Client &client, const Message &message, con
 {
 	if (target != client.getFd())
 		_event_manager.update(target, POLLOUT);
-	client.setResponse(Response(client, message, target));
+	_clients[target]->setResponse(Response(client, message, target));
 }

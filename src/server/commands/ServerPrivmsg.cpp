@@ -13,9 +13,7 @@ void	Server::sendPrivmsg(Client &client, const Message &message)
 		client.setResponse(Response(client, message, ERR_NEEDMOREPARAMS));
 		return ;
 	}
-	
 	target = message.getParams()[0];
-
 	if (target[0] == '#')
 	{	for (size_t i = 0; i < client.getChannels().size(); i++)
 		{
@@ -28,7 +26,6 @@ void	Server::sendPrivmsg(Client &client, const Message &message)
 		}
 		client.setResponse(Response(client, message, ERR_CANNOTSENDTOCHAN));
 	}
-
 	else
 	{	
 		for (it = _clients.begin(); it != _clients.end(); it++)

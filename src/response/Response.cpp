@@ -25,7 +25,11 @@ Response::Response(const Client &client, const Message &message, const ReplyCode
 	_nick = client.getNick();
 	_user = client.getUser();
 	for (size_t i = 0; i < message.getParams().size(); i++)
-		_params += message.getParams()[i] + " ";
+	{
+		_params += message.getParams()[i];
+		if (i + 1 < message.getParams().size())
+			_params += " ";
+	}
 	_command = message.getCommand();
 	_trailing = message.getTrailing();
 	if (_nick == "")
@@ -43,7 +47,11 @@ Response::Response(const Client &client, const Message &message, const int &targ
 	_nick = client.getNick();
 	_user = client.getUser();
 	for (size_t i = 0; i < message.getParams().size(); i++)
-		_params += message.getParams()[i] + " ";
+	{
+		_params += message.getParams()[i];
+		if (i + 1 < message.getParams().size())
+			_params += " ";
+	}
 	_command = message.getCommand();
 	_trailing = message.getTrailing();
 	if (_nick == "")
@@ -61,7 +69,11 @@ Response::Response(const Client &client, const Message &message, const std::vect
 	_nick = client.getNick();
 	_user = client.getUser();
 	for (size_t i = 0; i < message.getParams().size(); i++)
+	{
 		_params += message.getParams()[i];
+		if (i + 1 < message.getParams().size())
+			_params += " ";
+	}
 	_command = message.getCommand();
 	_trailing = message.getTrailing();
 	if (_nick == "")
