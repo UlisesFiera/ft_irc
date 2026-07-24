@@ -13,7 +13,8 @@ void	Server::changeNick(Client &client, const Message &message)
 		return ;
 	if (registerNick(client, message))
 	{
-		std::cout << "Nick changed successfully from " << prev_nick << " to " << client.getNick() << std::endl;
+		std::cout << "\033[35mircserv@asulgernan:\033[0mNick changed successfully from " << prev_nick << " to " << client.getNick() << std::endl;
+		client.setOldNick(prev_nick);
 		for (size_t i = 0; i < client.getChannels().size(); i++)
 			createStreamingResponse(client, message, client.getChannels()[i]->getNicks());
 		createStreamingResponse(client, message, client.getFd());

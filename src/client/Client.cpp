@@ -43,6 +43,11 @@ Client::~Client()
 
 }
 
+const std::string	&Client::getOldNick() const
+{
+	return (_old_nick);
+}
+
 const std::string	&Client::getAddr() const
 {
 	return (_addr);
@@ -210,4 +215,9 @@ void	Client::removeChannel(const Channel &channel)
             break;
         }
     }
+}
+
+void	Client::setOldNick(const std::string &nick)
+{
+	_old_nick = nick;
 }

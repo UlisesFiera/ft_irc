@@ -90,6 +90,7 @@ class Response
 		size_t						_bytes_sent;
 		std::string					_trailing;
 		std::vector<int>			_targets;
+		std::string					_old_nick;
 };
 
 #endif

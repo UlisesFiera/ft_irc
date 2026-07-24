@@ -44,6 +44,7 @@ class Client
 		Channel							*getChannel(const std::string &channel);
 		const int						&getFd() const;
 		const std::string				&getAddr() const;
+		const std::string				&getOldNick() const;
 
 		// setters
 		void 							setLastActivity();
@@ -60,6 +61,7 @@ class Client
 		void							setChannel(Channel *channel);
 		void							setFd(const int &fd);
 		void							setAddr(const std::string &addr);
+		void							setOldNick(const std::string &nick);
 		
 		bool							isInChannel(const std::string &channel);
 		void							removeChannel(const Channel &channel);
@@ -79,6 +81,7 @@ class Client
 		std::vector<Response>			_responses;
 		std::vector<Channel*>			_channels_joined;
 		std::string						_addr;
+		std::string						_old_nick;
 };
 
 #endif

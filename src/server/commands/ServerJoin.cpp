@@ -24,7 +24,7 @@ void Server::joinChannel(Client &client, const Message &message)
 			Channel *new_channel = new Channel(channel_name);
 
 			_channels[channel_name] = new_channel;
-			std::cout << "[JOIN] Channel " << channel_name << " created by " << client.getNick() << std::endl;
+			std::cout << "\033[35mircserv@asulgernan:\033[0m[JOIN] Channel " << channel_name << " created by " << client.getNick() << std::endl;
 			_channels[channel_name]->setOperator(client.getNick());
 		}
         
@@ -64,7 +64,7 @@ void Server::joinChannel(Client &client, const Message &message)
 	if (client.isInChannel(channel_name))
 		return;
 
-	std::cout << "[JOIN] Client " << client.getNick() << " joined channel " << channel_name << std::endl;
+	std::cout << "\033[35mircserv@asulgernan:\033[0m[JOIN] Client " << client.getNick() << " joined channel " << channel_name << std::endl;
 
 	_channels[channel_name]->setMembers(&client);
 	client.setChannel(_channels[channel_name]);

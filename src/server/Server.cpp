@@ -50,6 +50,7 @@ void	Server::signal_handler(int signum)
 void	Server::removeFromChannels(Client &client)
 {
 	std::map<std::string, Channel*>::iterator	it;
+	std::map<std::string, Channel*>::iterator	next;
 
 	for (it = _channels.begin(); it != _channels.end(); it++)
 	{
@@ -62,6 +63,19 @@ void	Server::removeFromChannels(Client &client)
 				it->second->removeMember(client);
 			}
 		}
+	}
+	for (it = _channels.begin(); it != _channels.end();)
+	{
+		if (it->second->isEmpty())
+		{
+			next = it;
+			next++;
+			delete it->second; 
+			_channels.erase(it); 
+			it = next;
+		}
+		else
+			it++;
 	}
 }
 

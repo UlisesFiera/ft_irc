@@ -58,6 +58,7 @@ Response::Response(const Client &client, const Message &message, const int &targ
 		_nick = "*";
 	if (_user == "")
 		_user = "*";
+	_old_nick = client.getOldNick();
 	buildStreamingResponse(message);
 }
 
@@ -80,6 +81,7 @@ Response::Response(const Client &client, const Message &message, const std::vect
 		_nick = "*";
 	if (_user == "")
 		_user = "*";
+	_old_nick = client.getOldNick();
 	buildStreamingResponse(message);
 }
 
@@ -99,6 +101,7 @@ Response::Response(const Response& copyResponse)
 	_params = copyResponse._params;
 	_trailing = copyResponse._trailing;
 	_targets = copyResponse._targets;
+	_old_nick = copyResponse._old_nick;
 }
 
 // operator overrides
@@ -119,6 +122,7 @@ Response& Response::operator=(const Response& copyResponse)
 		_params = copyResponse._params;
 		_trailing = copyResponse._trailing;
 		_targets = copyResponse._targets;
+		_old_nick = copyResponse._old_nick;
 	}
 	return (*this);
 }
@@ -226,6 +230,8 @@ void	Response::buildStreamingResponse(const Message &message)
 	}
 	else if (_command != INVITE)
 	{
+		prefix = ":" + _old_nick + "!" + _user + "@" + _addr;
+		response = prefix + " " + getCommandString(_command);
 		_trailing = message.getParams()[0];
 		response += " :" + _trailing;
 	}
