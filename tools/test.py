@@ -1,11 +1,13 @@
 import socket
+import time
 
 s = socket.socket()
 s.connect(("127.0.0.1", 6667))
 
-s.sendall(b"PING :hello\r\n")
+s.sendall(b"asd")
 
-response = s.recv(4096)
-print(response.decode())
+time.sleep(20)
+
+s.sendall(b"\r\n")
 
 s.close()
