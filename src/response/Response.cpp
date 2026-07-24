@@ -16,7 +16,7 @@ Response::Response()
 	_bytes_sent = 0;
 }
 
-Response::Response(const Client &client, const Message &message, const ReplyCode &code)
+Response::Response(Client &client, const Message &message, const ReplyCode &code)
 {
 	_targets.push_back(client.getFd());
 	_bytes_sent = 0;
@@ -36,6 +36,21 @@ Response::Response(const Client &client, const Message &message, const ReplyCode
 		_nick = "*";
 	if (_user == "")
 		_user = "*";
+	if (message.getCommand() == JOIN && code == RPL_NAMREPLY)
+	{
+		_channel = message.getParams()[0];
+		for (size_t i = 0; i < client.getChannel(_channel)->getNicks().size(); i++)
+		{
+			_ch_members += client.getChannel(_channel)->getNicks()[i];
+			if (i + 1 < client.getChannel(_channel)->getNicks().size()) 
+				_ch_members += " ";
+		}
+	}
+	//if (message.getCommand() == MODE && message.getParams().size() == 1)
+	//{
+	//	_channel = message.getParams()[0];
+	//	_ch_members = client.getChannel(_channel).ge
+	//}
 	buildNumericResponse();
 }
 
@@ -102,6 +117,8 @@ Response::Response(const Response& copyResponse)
 	_trailing = copyResponse._trailing;
 	_targets = copyResponse._targets;
 	_old_nick = copyResponse._old_nick;
+	_channel = copyResponse._channel;
+	_ch_members = copyResponse._ch_members;
 }
 
 // operator overrides
@@ -123,6 +140,8 @@ Response& Response::operator=(const Response& copyResponse)
 		_trailing = copyResponse._trailing;
 		_targets = copyResponse._targets;
 		_old_nick = copyResponse._old_nick;
+		_channel = copyResponse._channel;
+		_ch_members = copyResponse._ch_members;
 	}
 	return (*this);
 }
@@ -332,6 +351,12 @@ void	Response::buildNumericResponse()
 			break ;
 		case RPL_CHANNELMODEIS:
 			response += _params;
+			break ;
+		case RPL_NAMREPLY:
+			response += "= " + _channel + " :" + _ch_members;
+			break ;
+		case RPL_ENDOFNAMES:
+			response += _channel + " :End of /NAMES list.";
 			break ;
 		default:
 			response += ":Unknown reply";

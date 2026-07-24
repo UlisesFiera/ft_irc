@@ -61,6 +61,7 @@ void	Server::removeFromChannels(Client &client)
 				std::cout << "\033[35mircserv@asulgernan:\033[0mRemoving " << client.getNick() << " from " << it->first << std::endl;
 				createStreamingResponse(client, Message("PART " + it->first), it->second->getNicks());
 				it->second->removeMember(client);
+				client.removeChannel(*it->second);
 			}
 		}
 	}
