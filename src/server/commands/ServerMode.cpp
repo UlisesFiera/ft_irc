@@ -62,6 +62,11 @@ void Server::executeMode(std::vector<std::string> &params, Client &client, const
         arg_idx++;
     }
 
+    bool seen_i = false;
+    bool seen_t = false;
+    bool seen_k = false;
+    bool seen_l = false;
+
     for (size_t i = 1; i < arg_idx; i++)
     {
         char sign = params[i][0];
@@ -77,54 +82,79 @@ void Server::executeMode(std::vector<std::string> &params, Client &client, const
             }
 
             if (c == 'i')
-			{
-				if (sign == '+')
-                	_channels[channel_name]->setInviteOnly(true);
-				if (sign == '-')
-                	_channels[channel_name]->setInviteOnly(false);
-			}
+            {
+                if (!seen_i)
+                {
+                    if (sign == '+')
+                        _channels[channel_name]->setInviteOnly(true);
+                    else if (sign == '-')
+                        _channels[channel_name]->setInviteOnly(false);
+                    seen_i = true; // Marcamos como visto
+                }
+            }
             else if (c == 't')
-                _channels[channel_name]->setTopicRestricted((sign == '+'));
-            
+            {
+                if (!seen_t)
+                {
+                    _channels[channel_name]->setTopicRestricted((sign == '+'));
+                    seen_t = true;
+                }
+            }
             else if (c == 'k')
             {
-                std::string pass = params[arg_idx++];
-                if (sign == '+')
-                    _channels[channel_name]->setPassword(pass);
-                else
-                    _channels[channel_name]->setPassword("");
+                std::string pass = params[arg_idx++]; 
+                
+                if (!seen_k)
+                {
+                    if (sign == '+')
+                        _channels[channel_name]->setPassword(pass);
+                    else
+                        _channels[channel_name]->setPassword("");
+                    seen_k = true;
+                }
             }
             else if (c == 'l')
             {
                 if (sign == '+')
                 {
-                    size_t limit = atoi(params[arg_idx++].c_str());
-                    _channels[channel_name]->setUserLimit(limit);
+                    size_t limit = atoi(params[arg_idx++].c_str()); 
+                    
+                    if (!seen_l)
+                    {
+                        _channels[channel_name]->setUserLimit(limit);
+                        seen_l = true;
+                    }
                 }
                 else
-                    _channels[channel_name]->setUserLimit(0);
+                {
+                    if (!seen_l)
+                    {
+                        _channels[channel_name]->setUserLimit(0);
+                        seen_l = true;
+                    }
+                }
             }
             else if (c == 'o')
             {
                 std::string target_nick = params[arg_idx++];
                 if (sign == '+')
-				{
-					if (_channels[channel_name]->isInChannel(target_nick))
-                    	_channels[channel_name]->setOperator(target_nick);
-					else
-					{
-						client.setResponse(Response(client, message, ERR_NOTONCHANNEL));
-						return;
-					}
-				}
+                {
+                    if (_channels[channel_name]->isInChannel(target_nick))
+                        _channels[channel_name]->setOperator(target_nick);
+                    else
+                    {
+                        client.setResponse(Response(client, message, ERR_NOTONCHANNEL));
+                        return;
+                    }
+                }
                 else
                     _channels[channel_name]->removeOperator(target_nick); 
             }
         }
     }
     
-	createStreamingResponse(client, message, _channels[channel_name]->getNicks());
-	createStreamingResponse(client, message, client.getFd());
+    createStreamingResponse(client, message, _channels[channel_name]->getNicks());
+    createStreamingResponse(client, message, client.getFd());
 }
 
 void Server::channelMode(Client &client, const Message &message)
