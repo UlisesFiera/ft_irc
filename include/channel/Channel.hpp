@@ -50,6 +50,7 @@ class Channel
 		bool 								isInChannel(const std::string &client_nick);
 		void								removeOperator(const std::string &target_operator);
 		bool								isEmpty();
+		Client *							getClientFromTarget(const std::string &name);
 
 
 	private:

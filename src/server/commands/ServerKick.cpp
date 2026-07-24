@@ -36,21 +36,6 @@ void	Server::kickChannel(Client &client, const Message &message)
 	}
 
 	createStreamingResponse(client, message, _channels[channel_name]->getNicks());
-	_channels[channel_name]->removeMember(client);
-	client.removeChannel(*_channels[channel_name]);
-
-	if (_channels[channel_name]->isEmpty())
-	{
-		std::map<std::string, Channel*>::iterator it;
-
-		for (it = _channels.begin(); it != _channels.end(); ++it)
-		{
-			if ((it->second)->getName() == _channels[channel_name]->getName())
-			{
-				delete it->second;
-				_channels.erase(it);
-				break;
-			}
-		}
-	}
+	_channels[channel_name]->getClientFromTarget(target)->removeChannel(*_channels[channel_name]);
+	_channels[channel_name]->removeMember(*_channels[channel_name]->getClientFromTarget(target));
 }

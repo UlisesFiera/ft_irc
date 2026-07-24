@@ -255,3 +255,13 @@ bool Channel::isEmpty()
 		return true;
 	return false;
 }
+
+Client *	Channel::getClientFromTarget(const std::string &name)
+{
+	for (size_t i = 0; i < this->getMembersVec().size(); i++)
+	{
+		if (this->getMembersVec()[i]->getNick() == name)
+			return this->getMembersVec()[i];
+	}
+	return NULL;
+}
