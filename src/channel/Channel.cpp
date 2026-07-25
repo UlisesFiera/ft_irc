@@ -2,7 +2,7 @@
 
 Channel::Channel () {}
 
-Channel::Channel (const std::string &name) : _inviteOnly(false), _topicRestricted(false), _userLimit(0)
+Channel::Channel (const std::string &name) : _inviteOnly(false), _topicRestricted(false), _userLimit(0), _topic(""), _channelModes("")
 {
 	if (checkName(name) == true)
 		_name = name;
@@ -20,6 +20,8 @@ Channel::Channel (const Channel &other)
 	_userLimit = other._userLimit;
 	_invitedNicks = other._invitedNicks;
 	_operators = other._operators;
+	_topic = other._topic;
+	_channelModes = other._channelModes;
 }
 
 Channel &Channel::operator=(const Channel &other)
@@ -34,6 +36,8 @@ Channel &Channel::operator=(const Channel &other)
 		_userLimit = other._userLimit;
 		_invitedNicks = other._invitedNicks;
 		_operators = other._operators;
+		_topic = other._topic;
+		_channelModes = other._channelModes;
 	}
 	return *this;
 }
