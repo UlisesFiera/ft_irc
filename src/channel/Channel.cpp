@@ -86,6 +86,10 @@ const std::string	&Channel::getTopic() const
 	return _topic;
 }
 
+const std::string	&Channel::getChannelModes() const
+{
+	return _channelModes;
+}
 
 
 
@@ -137,6 +141,11 @@ void Channel::setOperator(const std::string &new_operator)
 void Channel::setTopic(const std::string &topic)
 {
 	_topic = topic;
+}
+
+void Channel::setChannelModes(const std::string &modes)
+{
+	_channelModes = modes;
 }
 
 
