@@ -56,7 +56,7 @@ class Response
 		Response();
 		Response(const Client &client, const Message &message, const int &target);
 		Response(const Client &client, const Message &message, const std::vector<int> &targets);
-		Response(const Client &client, const Message &message, const ReplyCode &code);
+		Response(Client &client, const Message &message, const ReplyCode &code);
 
 		// copy constructors
 		Response(const Response &copyResponse);
@@ -91,6 +91,8 @@ class Response
 		std::string					_trailing;
 		std::vector<int>			_targets;
 		std::string					_old_nick;
+		std::string					_channel;
+		std::string					_ch_members;
 };
 
 #endif

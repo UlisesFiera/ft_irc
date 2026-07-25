@@ -16,8 +16,11 @@ Response::Response()
 	_bytes_sent = 0;
 }
 
-Response::Response(const Client &client, const Message &message, const ReplyCode &code)
+Response::Response(Client &client, const Message &message, const ReplyCode &code)
 {
+	size_t	posk = 0;
+	size_t	posl = 0;
+
 	_targets.push_back(client.getFd());
 	_bytes_sent = 0;
 	_reply_code = code;
@@ -36,6 +39,51 @@ Response::Response(const Client &client, const Message &message, const ReplyCode
 		_nick = "*";
 	if (_user == "")
 		_user = "*";
+	if (message.getCommand() == JOIN && code == RPL_NAMREPLY)
+	{
+		if (!message.getParams().empty())
+			_channel = message.getParams()[0];
+		for (size_t i = 0; i < client.getChannel(_channel)->getNicks().size(); i++)
+		{
+			_ch_members += client.getChannel(_channel)->getNicks()[i];
+			if (i + 1 < client.getChannel(_channel)->getNicks().size()) 
+				_ch_members += " ";
+		}
+	}
+	if (message.getCommand() == MODE && message.getParams().size() == 1)
+	{
+		_channel = message.getParams()[0];
+		_ch_members = client.getChannel(_channel)->getChannelModes();
+		posk = client.getChannel(_channel)->getChannelModes().find('k');
+		posl = client.getChannel(_channel)->getChannelModes().find('l');
+		if (posk != std::string::npos)
+		{
+			if (posl != std::string::npos && posk < posl)
+				_ch_members += " " + client.getChannel(_channel)->getPassword() + " " + to_string(client.getChannel(_channel)->getUserLimit());
+			else if (posl != std::string::npos && posk > posl)
+				_ch_members += " " + to_string(client.getChannel(_channel)->getUserLimit()) + " " + client.getChannel(_channel)->getPassword();
+			else if (posl == std::string::npos)
+				_ch_members += " " + client.getChannel(_channel)->getPassword();
+			else
+				_ch_members += " " + client.getChannel(_channel)->getPassword();
+		}
+		else if (posl != std::string::npos)
+		{
+			if (posk != std::string::npos && posl < posk)
+				_ch_members += " " + to_string(client.getChannel(_channel)->getUserLimit()) + " " + client.getChannel(_channel)->getPassword();
+			else if (posk != std::string::npos && posl > posk)
+				_ch_members += " " + client.getChannel(_channel)->getPassword() + " " + to_string(client.getChannel(_channel)->getUserLimit());
+			else if (posk == std::string::npos)
+				_ch_members += " " + client.getChannel(_channel)->getUserLimit();
+			else
+				_ch_members += " " + client.getChannel(_channel)->getUserLimit();
+		}
+	}
+	if (message.getCommand() == TOPIC && message.getParams().size() == 1)
+	{
+		_channel = message.getParams()[0];
+		_ch_members = client.getChannel(_channel)->getTopic();
+	}
 	buildNumericResponse();
 }
 
@@ -102,6 +150,8 @@ Response::Response(const Response& copyResponse)
 	_trailing = copyResponse._trailing;
 	_targets = copyResponse._targets;
 	_old_nick = copyResponse._old_nick;
+	_channel = copyResponse._channel;
+	_ch_members = copyResponse._ch_members;
 }
 
 // operator overrides
@@ -123,6 +173,8 @@ Response& Response::operator=(const Response& copyResponse)
 		_trailing = copyResponse._trailing;
 		_targets = copyResponse._targets;
 		_old_nick = copyResponse._old_nick;
+		_channel = copyResponse._channel;
+		_ch_members = copyResponse._ch_members;
 	}
 	return (*this);
 }
@@ -207,7 +259,7 @@ void	Response::buildStreamingResponse(const Message &message)
 	}
 	if (_command == CAP)
 	{
-		if (message.getParams()[0] == "END")
+		if (!message.getParams().empty() && message.getParams()[0] == "END")
 		{
 			std::cout << "CAP negotiation ended" << std::endl;
 			return ;
@@ -225,14 +277,16 @@ void	Response::buildStreamingResponse(const Message &message)
 	}
 	else if (_command != NICK)
 	{
-		_trailing = message.getParams()[0];
+		if (!_params.empty())
+			_trailing = message.getParams()[0];
 		response += " :" + _trailing;
 	}
 	else if (_command != INVITE)
 	{
 		prefix = ":" + _old_nick + "!" + _user + "@" + _addr;
 		response = prefix + " " + getCommandString(_command);
-		_trailing = message.getParams()[0];
+		if (!_params.empty())
+			_trailing = message.getParams()[0];
 		response += " :" + _trailing;
 	}
 	response += "\r\n";
@@ -276,6 +330,12 @@ void	Response::buildNumericResponse()
 				"NETWORK=ft_irc "
 				":are supported by this server";
 			break ;
+		case RPL_TOPIC:
+			response += _params + " " + _ch_members;
+			break ;
+		case RPL_NOTOPIC:
+			response += _params + " :No topic is set";
+			break ;
 		case ERR_NONICKNAMEGIVEN:
 			response += ":No nickname given";
 			break ;
@@ -295,7 +355,7 @@ void	Response::buildNumericResponse()
 			response += ":Password incorrect";
 			break ;
 		case ERR_UNKNOWNCOMMAND:
-			response += getCommandString(_command) + " " + _params + " :Unknown command";
+			response += getCommandString(_command) + " " + _params + ":Unknown command";
 			break ;
 		case ERR_NOTREGISTERED:
 			response += ":You have not registered";
@@ -331,7 +391,13 @@ void	Response::buildNumericResponse()
 			response += _params + " :is unknown mode char to me";
 			break ;
 		case RPL_CHANNELMODEIS:
-			response += _params;
+			response += _params + " " + _ch_members;
+			break ;
+		case RPL_NAMREPLY:
+			response += "= " + _channel + " :" + _ch_members;
+			break ;
+		case RPL_ENDOFNAMES:
+			response += _channel + " :End of /NAMES list.";
 			break ;
 		default:
 			response += ":Unknown reply";

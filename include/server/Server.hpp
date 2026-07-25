@@ -18,6 +18,7 @@
 
 # define BUFFER_SIZE 1024
 # define NICK_SIZE 30
+# define STREAM_MAX 512
 
 class Server
 {

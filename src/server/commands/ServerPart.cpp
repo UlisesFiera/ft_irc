@@ -23,4 +23,5 @@ void Server::channelPart(Client &client, const Message &message)
 	}
 
 	_channels[channel_name]->removeMember(client);
+	client.removeChannel(*_channels[channel_name]);
 }

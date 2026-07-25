@@ -71,4 +71,6 @@ void Server::joinChannel(Client &client, const Message &message)
 	client.setChannel(_channels[channel_name]);
 	createStreamingResponse(client, message, _channels[channel_name]->getNicks());
 	createStreamingResponse(client, message, client.getFd());
+	client.setResponse(Response(client, message, RPL_NAMREPLY));
+	client.setResponse(Response(client, message, RPL_ENDOFNAMES));
 }

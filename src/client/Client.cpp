@@ -207,14 +207,14 @@ void	Client::removeChannel(const Channel &channel)
 {
 	std::vector<Channel*>::iterator it;
 
-    for (it = _channels_joined.begin(); it != _channels_joined.end(); ++it)
-    {
-		if ((*it)->getName() == channel.getName())
-        {
-            _channels_joined.erase(it);
-            break;
-        }
-    }
+	for (it = _channels_joined.begin(); it != _channels_joined.end(); ++it)
+	{
+		if (*it && (*it)->getName() == channel.getName())
+		{
+			_channels_joined.erase(it);
+			break;
+		}
+	}
 }
 
 void	Client::setOldNick(const std::string &nick)
