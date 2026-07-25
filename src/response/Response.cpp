@@ -317,7 +317,7 @@ void	Response::buildNumericResponse()
 			response += ":Password incorrect";
 			break ;
 		case ERR_UNKNOWNCOMMAND:
-			response += getCommandString(_command) + " " + _params + " :Unknown command";
+			response += getCommandString(_command) + " " + _params + ":Unknown command";
 			break ;
 		case ERR_NOTREGISTERED:
 			response += ":You have not registered";

@@ -272,11 +272,6 @@ std::string	Server::readStream(int client_fd)
 
 	if (bytes_read > 0)
 	{
-		if (bytes_read > STREAM_MAX)
-		{
-			std::cout << "\033[35mircserv@asulgernan:\033[0mStream from client " << client_fd << " rejected: exceeded stream size limit" << std::endl;
-			return ("");
-		}
 		std::cout << "\033[35mircserv@asulgernan:\033[0mStream received from client " << client_fd << ":\n\033[33mclient@" << client_fd << ":\033[0m";
 		printcrlf(buffer, bytes_read);
 		stored_stream.append(buffer, bytes_read);

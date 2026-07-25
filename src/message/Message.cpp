@@ -80,7 +80,11 @@ commands Message::resolveCommand()
 	if (_command == "PART")
 		return PART;
 	else
+	{
+		std::cout << "\033[35mircserv@asulgernan:\033[0mCought invalid command " << " :" << _command << std::endl;
 		return INVALID;
+	}
+		
 }
 
 void	Message::parseMessage()
