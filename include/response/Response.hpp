@@ -22,6 +22,7 @@ enum ReplyCode
 	RPL_CHANNELMODEIS	   = 324,
 	RPL_NOTOPIC            = 331,
 	RPL_TOPIC              = 332,
+	RPL_INVITING		   = 341,
 	RPL_NAMREPLY           = 353,
 	RPL_ENDOFNAMES         = 366,
 

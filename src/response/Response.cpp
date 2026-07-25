@@ -39,6 +39,8 @@ Response::Response(Client &client, const Message &message, const ReplyCode &code
 		_nick = "*";
 	if (_user == "")
 		_user = "*";
+	if (message.getCommand() == INVITE && code == ERR_CHANOPRIVSNEEDED && message.getParams().size() > 1)
+		_params = message.getParams()[1];
 	if (message.getCommand() == JOIN && code == RPL_NAMREPLY)
 	{
 		if (!message.getParams().empty())
@@ -50,7 +52,7 @@ Response::Response(Client &client, const Message &message, const ReplyCode &code
 				_ch_members += " ";
 		}
 	}
-	if (message.getCommand() == MODE && message.getParams().size() == 1)
+	if (message.getCommand() == MODE && message.getParams().size() == 1 && code == RPL_CHANNELMODEIS)
 	{
 		_channel = message.getParams()[0];
 		_ch_members = client.getChannel(_channel)->getChannelModes();
@@ -74,12 +76,12 @@ Response::Response(Client &client, const Message &message, const ReplyCode &code
 			else if (posk != std::string::npos && posl > posk)
 				_ch_members += " " + client.getChannel(_channel)->getPassword() + " " + to_string(client.getChannel(_channel)->getUserLimit());
 			else if (posk == std::string::npos)
-				_ch_members += " " + client.getChannel(_channel)->getUserLimit();
+				_ch_members += " " + to_string(client.getChannel(_channel)->getUserLimit());
 			else
-				_ch_members += " " + client.getChannel(_channel)->getUserLimit();
+				_ch_members += " " + to_string(client.getChannel(_channel)->getUserLimit());
 		}
 	}
-	if (message.getCommand() == TOPIC && message.getParams().size() == 1)
+	if (message.getCommand() == TOPIC && message.getParams().size() == 1 && (code == RPL_NOTOPIC || code == RPL_TOPIC))
 	{
 		_channel = message.getParams()[0];
 		_ch_members = client.getChannel(_channel)->getTopic();
@@ -275,13 +277,13 @@ void	Response::buildStreamingResponse(const Message &message)
 		if (!_trailing.empty())
 			response += " :" + _trailing;
 	}
-	else if (_command != NICK)
+	else if (_command == INVITE)
 	{
-		if (!_params.empty())
-			_trailing = message.getParams()[0];
-		response += " :" + _trailing;
+		if (!message.getParams().empty() && message.getParams().size() > 1)
+			response += " " + message.getParams()[0] + " :" + message.getParams()[1];
+		
 	}
-	else if (_command != INVITE)
+	else if (_command == NICK)
 	{
 		prefix = ":" + _old_nick + "!" + _user + "@" + _addr;
 		response = prefix + " " + getCommandString(_command);
@@ -335,6 +337,9 @@ void	Response::buildNumericResponse()
 			break ;
 		case RPL_NOTOPIC:
 			response += _params + " :No topic is set";
+			break ;
+		case RPL_INVITING:
+			response += _params;
 			break ;
 		case ERR_NONICKNAMEGIVEN:
 			response += ":No nickname given";
@@ -398,6 +403,9 @@ void	Response::buildNumericResponse()
 			break ;
 		case RPL_ENDOFNAMES:
 			response += _channel + " :End of /NAMES list.";
+			break ;
+		case ERR_USERNOTINCHANNEL:
+			response += _params + " not in channel";
 			break ;
 		default:
 			response += ":Unknown reply";

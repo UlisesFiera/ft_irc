@@ -36,12 +36,16 @@ void	Server::channelInvite(Client &client, const Message &message)
 	}
 
 	if (!_channels[channel_name]->isInChannel(target))
-	{
 		_channels[channel_name]->setInvitedNicks(target);
-		return;
-	}
 
-	createStreamingResponse(*_channels[channel_name]->getClientFromTarget(target), message, _channels[channel_name]->getClientFromTarget(target)->getFd());
+	int target_fd = nick2fd(target);
+    if (target_fd == -1)
+    {
+        client.setResponse(Response(client, Message("INVITE " + target), ERR_NOSUCHNICK));
+        return;
+    }
 
+	createStreamingResponse(client, message, nick2fd(target));
+	client.setResponse(Response(client, message, RPL_INVITING));
 	return;
 }

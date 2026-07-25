@@ -10,6 +10,7 @@ void	Server::kickChannel(Client &client, const Message &message)
 
 	std::string channel_name = message.getParams()[0];
 	std::string target = message.getParams()[1];
+	std::string reason = message.getTrailing();
 
 	if (!checkChannel(channel_name))
 	{
@@ -35,7 +36,16 @@ void	Server::kickChannel(Client &client, const Message &message)
 		return;
 	}
 
+	if (reason.empty())
+	{
+		_channels[channel_name]->setKickReason("");
+	}
+
+	else
+		_channels[channel_name]->setKickReason(reason);
+
 	createStreamingResponse(client, message, _channels[channel_name]->getNicks());
+	createStreamingResponse(client, message, client.getFd());
 	_channels[channel_name]->getClientFromTarget(target)->removeChannel(*_channels[channel_name]);
 	_channels[channel_name]->removeMember(*_channels[channel_name]->getClientFromTarget(target));
 }

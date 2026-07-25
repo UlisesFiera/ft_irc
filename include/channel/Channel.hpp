@@ -29,6 +29,7 @@ class Channel
 		const std::vector<std::string>		&getOperators() const;
 		const std::string					&getTopic() const;
 		const std::string					&getChannelModes() const;
+		const std::string					&getKickReason() const;
 
 		void    							setName(const std::string &name);
 		void    							setMembers(Client *members);
@@ -41,6 +42,7 @@ class Channel
 		void								setOperator(const std::string &new_operator);
 		void								setTopic(const std::string &topic);
 		void								setChannelModes(const std::string &modes);
+		void								setKickReason(const std::string &modes);
 
 
 		bool								checkName(const std::string &name) const;
@@ -67,6 +69,7 @@ class Channel
 		std::vector<std::string>			_operators;
 		std::string							_topic;
 		std::string							_channelModes;
+		std::string							_kickReason;
 };
 
 #endif

@@ -2,7 +2,7 @@
 
 Channel::Channel () {}
 
-Channel::Channel (const std::string &name) : _inviteOnly(false), _topicRestricted(false), _userLimit(0), _topic(""), _channelModes("")
+Channel::Channel (const std::string &name) : _inviteOnly(false), _topicRestricted(false), _userLimit(0), _topic(""), _channelModes(""), _kickReason("")
 {
 	if (checkName(name) == true)
 		_name = name;
@@ -22,6 +22,7 @@ Channel::Channel (const Channel &other)
 	_operators = other._operators;
 	_topic = other._topic;
 	_channelModes = other._channelModes;
+	_kickReason = other._kickReason;
 }
 
 Channel &Channel::operator=(const Channel &other)
@@ -38,6 +39,7 @@ Channel &Channel::operator=(const Channel &other)
 		_operators = other._operators;
 		_topic = other._topic;
 		_channelModes = other._channelModes;
+		_kickReason = other._kickReason;
 	}
 	return *this;
 }
@@ -95,6 +97,12 @@ const std::string	&Channel::getChannelModes() const
 	return _channelModes;
 }
 
+const std::string &Channel::getKickReason() const
+{
+	return _kickReason;
+}
+
+
 
 
 void Channel::setName(const std::string &name)
@@ -150,6 +158,11 @@ void Channel::setTopic(const std::string &topic)
 void Channel::setChannelModes(const std::string &modes)
 {
 	_channelModes = modes;
+}
+
+void Channel::setKickReason(const std::string &reason)
+{
+	_channelModes = reason;
 }
 
 

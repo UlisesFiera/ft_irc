@@ -72,7 +72,7 @@ class Server
 		void							channelTopic(Client &client, const Message &message);
 		void							channelInvite(Client &client, const Message &message);
 		void							channelMode(Client &client, const Message &message);
-		bool							modeChecker(std::vector<std::string> &params);
+		bool							modeChecker(std::string &params);
 		void							executeMode(std::vector<std::string> &params, Client &client, const Message &message);
 		void							channelPart(Client &client, const Message &message);
 		void							pong(Client &client, const Message &message);
