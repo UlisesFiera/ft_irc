@@ -38,7 +38,8 @@ Response::Response(Client &client, const Message &message, const ReplyCode &code
 		_user = "*";
 	if (message.getCommand() == JOIN && code == RPL_NAMREPLY)
 	{
-		_channel = message.getParams()[0];
+		if (!message.getParams().empty())
+			_channel = message.getParams()[0];
 		for (size_t i = 0; i < client.getChannel(_channel)->getNicks().size(); i++)
 		{
 			_ch_members += client.getChannel(_channel)->getNicks()[i];
@@ -226,7 +227,7 @@ void	Response::buildStreamingResponse(const Message &message)
 	}
 	if (_command == CAP)
 	{
-		if (message.getParams()[0] == "END")
+		if (!message.getParams().empty() && message.getParams()[0] == "END")
 		{
 			std::cout << "CAP negotiation ended" << std::endl;
 			return ;
@@ -244,14 +245,16 @@ void	Response::buildStreamingResponse(const Message &message)
 	}
 	else if (_command != NICK)
 	{
-		_trailing = message.getParams()[0];
+		if (!_params.empty())
+			_trailing = message.getParams()[0];
 		response += " :" + _trailing;
 	}
 	else if (_command != INVITE)
 	{
 		prefix = ":" + _old_nick + "!" + _user + "@" + _addr;
 		response = prefix + " " + getCommandString(_command);
-		_trailing = message.getParams()[0];
+		if (!_params.empty())
+			_trailing = message.getParams()[0];
 		response += " :" + _trailing;
 	}
 	response += "\r\n";

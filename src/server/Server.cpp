@@ -244,16 +244,12 @@ void	Server::registerClients()
 					&& _clients[read_clients[i]]->getMessages()[j].getCommand() != USER
 					&& _clients[read_clients[i]]->getMessages()[j].getCommand() != PASS)
 					continue ;
-				registerPass(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j]);
-				registerNick(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j]);
-				registerUser(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j]);
-				if (_clients[read_clients[i]]->getPass() == "")
-				{
-					_clients[read_clients[i]]->setResponse(Response(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j], ERR_PASSWDMISMATCH));
-					_clients2rm.push_back(_clients[read_clients[i]]->getFd());
-					_event_manager.clear(_clients[read_clients[i]]->getFd(), POLLIN);
-					return ;
-				}
+				if (_clients[read_clients[i]]->getMessages()[j].getCommand() == PASS)
+					registerPass(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j]);
+				else if (_clients[read_clients[i]]->getMessages()[j].getCommand() == NICK)
+					registerNick(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j]);
+				else if (_clients[read_clients[i]]->getMessages()[j].getCommand() == USER)
+					registerUser(*_clients[read_clients[i]], _clients[read_clients[i]]->getMessages()[j]);
 				if (_clients[read_clients[i]]->getPass() != "" && _clients[read_clients[i]]->getUser() != "" && _clients[read_clients[i]]->getNick() != "")
 				{
 					_clients[read_clients[i]]->setRegistered(true);
