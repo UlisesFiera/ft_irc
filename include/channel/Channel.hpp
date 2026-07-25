@@ -28,6 +28,7 @@ class Channel
 		const std::vector<std::string>		&getInvitedNicks() const;
 		const std::vector<std::string>		&getOperators() const;
 		const std::string					&getTopic() const;
+		const std::string					&getChannelModes() const;
 
 		void    							setName(const std::string &name);
 		void    							setMembers(Client *members);
@@ -39,6 +40,8 @@ class Channel
 		void								setOperators(const std::vector<std::string> &operators);
 		void								setOperator(const std::string &new_operator);
 		void								setTopic(const std::string &topic);
+		void								setChannelModes(const std::string &modes);
+
 
 		bool								checkName(const std::string &name) const;
 		bool    							checkPassword(const std::string &password) const;
@@ -63,6 +66,7 @@ class Channel
 		std::vector<std::string>			_invitedNicks;
 		std::vector<std::string>			_operators;
 		std::string							_topic;
+		std::string							_channelModes;
 };
 
 #endif

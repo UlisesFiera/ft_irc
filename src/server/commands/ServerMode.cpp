@@ -85,25 +85,21 @@ void Server::executeMode(std::vector<std::string> &params, Client &client, const
             {
                 if (!seen_i)
                 {
-                    if (sign == '+')
-                        _channels[channel_name]->setInviteOnly(true);
-                    else if (sign == '-')
-                        _channels[channel_name]->setInviteOnly(false);
-                    seen_i = true; // Marcamos como visto
+                    _channels[channel_name]->setInviteOnly(sign == '+');
+                    seen_i = true;
                 }
             }
             else if (c == 't')
             {
                 if (!seen_t)
                 {
-                    _channels[channel_name]->setTopicRestricted((sign == '+'));
+                    _channels[channel_name]->setTopicRestricted(sign == '+');
                     seen_t = true;
                 }
             }
             else if (c == 'k')
             {
                 std::string pass = params[arg_idx++]; 
-                
                 if (!seen_k)
                 {
                     if (sign == '+')
@@ -118,7 +114,6 @@ void Server::executeMode(std::vector<std::string> &params, Client &client, const
                 if (sign == '+')
                 {
                     size_t limit = atoi(params[arg_idx++].c_str()); 
-                    
                     if (!seen_l)
                     {
                         _channels[channel_name]->setUserLimit(limit);
@@ -159,42 +154,57 @@ void Server::executeMode(std::vector<std::string> &params, Client &client, const
 
 void Server::channelMode(Client &client, const Message &message)
 {
+    
     if (message.getParams().empty())
     {
         client.setResponse(Response(client, message, ERR_NEEDMOREPARAMS));
         return;
     }
-
+    
     std::string channel_name = message.getParams()[0];
     std::vector<std::string> params = message.getParams();
 
-	// check included to manage the mandatory connection check MODE <nick> +i
-	if (channel_name[0] != '#' && params.size() == 2 && params[1] == "+i")
-	{
-		createStreamingResponse(client, message, client.getFd());
-		return ;
-	}
     if (!checkChannel(channel_name))
     {
         client.setResponse(Response(client, message, ERR_NOSUCHCHANNEL));
         return;
     }
 
-    if (params.size() == 1)
+    if (channel_name[0] != '#' && params.size() == 2 && params[1] == "+i")
     {
-		client.setResponse(Response(client, message, RPL_CHANNELMODEIS));
-        return;
+        createStreamingResponse(client, message, client.getFd());
+        return ;
     }
 
-    if (!_channels[channel_name]->isOperator(client.getNick()))
+    if (params.size() >= 2 && !_channels[channel_name]->isOperator(client.getNick()))
     {
         client.setResponse(Response(client, message, ERR_CHANOPRIVSNEEDED));
         return;
     }
 
-    if (!modeChecker(params))
+    if (params.size() >= 2 && !modeChecker(params))
     {
         client.setResponse(Response(client, message, ERR_NEEDMOREPARAMS));
+        return;
+    }
+
+    if (params.size() == 1)
+    {
+        std::string active_modes = "";
+
+        if (_channels[channel_name]->getInviteOnly() || _channels[channel_name]->getTopicRestricted() || _channels[channel_name]->getPassword() != "" || _channels[channel_name]->getUserLimit() > 0)
+            active_modes += "+";
+
+        if (_channels[channel_name]->getInviteOnly()) active_modes += "i";
+        if (_channels[channel_name]->getTopicRestricted()) active_modes += "t";
+        if (_channels[channel_name]->getPassword() != "") active_modes += "k";
+        if (_channels[channel_name]->getUserLimit() > 0) active_modes += "l";
+
+        _channels[channel_name]->setChannelModes(active_modes);
+
+        std::cout << _channels[channel_name]->getChannelModes() << std::endl;
+
+		client.setResponse(Response(client, message, RPL_CHANNELMODEIS));
         return;
     }
 
