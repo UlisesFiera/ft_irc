@@ -18,6 +18,9 @@ Response::Response()
 
 Response::Response(Client &client, const Message &message, const ReplyCode &code)
 {
+	size_t	posk = 0;
+	size_t	posl = 0;
+
 	_targets.push_back(client.getFd());
 	_bytes_sent = 0;
 	_reply_code = code;
@@ -47,11 +50,40 @@ Response::Response(Client &client, const Message &message, const ReplyCode &code
 				_ch_members += " ";
 		}
 	}
-	//if (message.getCommand() == MODE && message.getParams().size() == 1)
-	//{
-	//	_channel = message.getParams()[0];
-	//	_ch_members = client.getChannel(_channel).ge
-	//}
+	if (message.getCommand() == MODE && message.getParams().size() == 1)
+	{
+		_channel = message.getParams()[0];
+		_ch_members = client.getChannel(_channel)->getChannelModes();
+		posk = client.getChannel(_channel)->getChannelModes().find('k');
+		posl = client.getChannel(_channel)->getChannelModes().find('l');
+		if (posk != std::string::npos)
+		{
+			if (posl != std::string::npos && posk < posl)
+				_ch_members += " " + client.getChannel(_channel)->getPassword() + " " + to_string(client.getChannel(_channel)->getUserLimit());
+			else if (posl != std::string::npos && posk > posl)
+				_ch_members += " " + to_string(client.getChannel(_channel)->getUserLimit()) + " " + client.getChannel(_channel)->getPassword();
+			else if (posl == std::string::npos)
+				_ch_members += " " + client.getChannel(_channel)->getPassword();
+			else
+				_ch_members += " " + client.getChannel(_channel)->getPassword();
+		}
+		else if (posl != std::string::npos)
+		{
+			if (posk != std::string::npos && posl < posk)
+				_ch_members += " " + to_string(client.getChannel(_channel)->getUserLimit()) + " " + client.getChannel(_channel)->getPassword();
+			else if (posk != std::string::npos && posl > posk)
+				_ch_members += " " + client.getChannel(_channel)->getPassword() + " " + to_string(client.getChannel(_channel)->getUserLimit());
+			else if (posk == std::string::npos)
+				_ch_members += " " + client.getChannel(_channel)->getUserLimit();
+			else
+				_ch_members += " " + client.getChannel(_channel)->getUserLimit();
+		}
+	}
+	if (message.getCommand() == TOPIC && message.getParams().size() == 1)
+	{
+		_channel = message.getParams()[0];
+		_ch_members = client.getChannel(_channel)->getTopic();
+	}
 	buildNumericResponse();
 }
 
@@ -298,6 +330,12 @@ void	Response::buildNumericResponse()
 				"NETWORK=ft_irc "
 				":are supported by this server";
 			break ;
+		case RPL_TOPIC:
+			response += _params + " " + _ch_members;
+			break ;
+		case RPL_NOTOPIC:
+			response += _params + " :No topic is set";
+			break ;
 		case ERR_NONICKNAMEGIVEN:
 			response += ":No nickname given";
 			break ;
@@ -353,7 +391,7 @@ void	Response::buildNumericResponse()
 			response += _params + " :is unknown mode char to me";
 			break ;
 		case RPL_CHANNELMODEIS:
-			response += _params;
+			response += _params + " " + _ch_members;
 			break ;
 		case RPL_NAMREPLY:
 			response += "= " + _channel + " :" + _ch_members;
