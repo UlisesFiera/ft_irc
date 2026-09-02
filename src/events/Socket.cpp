@@ -1,4 +1,4 @@
-#include "server/Socket.hpp"
+#include "events/Socket.hpp"
 
 Socket::Socket()
 {
@@ -23,7 +23,7 @@ Socket::Socket(const int &port)
 		throw std::runtime_error(std::string("bind: ") + std::strerror(errno));
 	if (listen(_socketFd, SOMAXCONN) < 0)
 		throw std::runtime_error(std::string("listen: ") + std::strerror(errno));
-	std::cout << "Listening in " << inet_ntoa(_address.sin_addr)
+	std::cout << "\033[35mircserv@asulgernan:\033[0mListening in " << inet_ntoa(_address.sin_addr)
              					 << ":" << ntohs(_address.sin_port)
              					 << std::endl;
 }

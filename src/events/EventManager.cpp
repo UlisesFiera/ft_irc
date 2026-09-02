@@ -1,4 +1,4 @@
-#include "server/EventManager.hpp"
+#include "events/EventManager.hpp"
 
 //// cannon methods
 // constructors
@@ -61,6 +61,7 @@ void	EventManager::addEvent(const int fd, const short event)
 	pollfd.events = event;
 	pollfd.revents = 0;
 	_pollfds.push_back(pollfd);
+	std::cout << "\033[35mircserv@asulgernan:\033[0mSocket " << fd << " added event " << event2str(event) << std::endl;
 }
 
 void	EventManager::addListen(int fd)
@@ -98,6 +99,7 @@ void	EventManager::close(int fd)
 			::close(fd);
 			_pollfds.erase(it);
 			_socketfd2event.erase(fd);
+			std::cout << "\033[35mircserv@asulgernan:\033[0mSocket " << fd << " closed" << std::endl;
 			break ;
 		}
 	}
@@ -111,6 +113,7 @@ void	EventManager::update(int fd, short event)
 	{
 		if (it->fd == fd)
 		{
+			std::cout << "\033[35mircserv@asulgernan:\033[0mSocket " << fd << " swapped to " << event2str(event) << std::endl;
 			it->events |= event;
 			break ;
 		}
@@ -125,6 +128,7 @@ void	EventManager::clear(int fd, short event)
 	{
 		if (it->fd == fd)
 		{
+			std::cout << "\033[35mircserv@asulgernan:\033[0mSocket " << fd << " cleared " << event2str(event) << std::endl;
 			it->events &= ~event;
 			break ;
 		}
@@ -243,4 +247,13 @@ std::vector<int>	EventManager::writableClients() const
 			sockets.push_back(it->fd);
 	}
 	return (sockets);
+}
+
+const std::string	event2str(short event)
+{
+	if (event == POLLIN)
+		return ("POLLIN");
+	if (event == POLLOUT)
+		return ("POLLOUT");
+	return ("INVALID");
 }

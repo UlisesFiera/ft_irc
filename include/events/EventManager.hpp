@@ -5,6 +5,8 @@
 # include <iostream>
 # include <map>
 # include <unistd.h>
+# include <vector>
+# include <cstring>
 
 class EventManager 
 {
@@ -59,5 +61,7 @@ class EventManager
 		//functions
 		void					addEvent(const int fd, const short event);
 };
+
+const std::string	event2str(short event);
 
 #endif
